@@ -43,7 +43,7 @@ public class CourseController {
     @DeleteMapping
     public String deleteAllCourses() {
         courseService.deleteAllCourses();
-        return "All courses have been deleted succesfully.";
+        return "All courses have been deleted successfully.";
     }
 
     // Delete course by ID
