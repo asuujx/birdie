@@ -124,7 +124,8 @@ ALTER SEQUENCE public.courses_id_seq OWNED BY public.courses.course_id;
 CREATE TABLE public.files (
     file_id integer NOT NULL,
     file_path character varying(255) NOT NULL,
-    date_added timestamp without time zone NOT NULL
+    date_added timestamp without time zone NOT NULL,
+    solution_id integer NOT NULL
 );
 
 
@@ -195,8 +196,7 @@ CREATE TABLE public.solutions (
     solution_id integer NOT NULL,
     course_member_id integer NOT NULL,
     task_id integer NOT NULL,
-    date_added timestamp without time zone NOT NULL,
-    file_id integer NOT NULL
+    date_added timestamp without time zone NOT NULL
 );
 
 
@@ -231,7 +231,7 @@ ALTER SEQUENCE public.solutions_id_seq OWNED BY public.solutions.solution_id;
 CREATE TABLE public.tasks (
     task_id integer NOT NULL,
     course_id integer NOT NULL,
-    name character varying(100),
+    name character varying(100) NOT NULL,
     description character varying(255),
     due_date timestamp without time zone
 );
@@ -372,7 +372,7 @@ COPY public.courses (course_id, name) FROM stdin;
 -- Data for Name: files; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.files (file_id, file_path, date_added) FROM stdin;
+COPY public.files (file_id, file_path, date_added, solution_id) FROM stdin;
 \.
 
 
@@ -388,7 +388,7 @@ COPY public.groups (group_id, course_id, name) FROM stdin;
 -- Data for Name: solutions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.solutions (solution_id, course_member_id, task_id, date_added, file_id) FROM stdin;
+COPY public.solutions (solution_id, course_member_id, task_id, date_added) FROM stdin;
 \.
 
 
@@ -554,11 +554,11 @@ ALTER TABLE ONLY public.course_members
 
 
 --
--- Name: solutions filefk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: files filesfk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.solutions
-    ADD CONSTRAINT filefk FOREIGN KEY (file_id) REFERENCES public.files(file_id);
+ALTER TABLE ONLY public.files
+    ADD CONSTRAINT filesfk FOREIGN KEY (solution_id) REFERENCES public.solutions(solution_id);
 
 
 --
