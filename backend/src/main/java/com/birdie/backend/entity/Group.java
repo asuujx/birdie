@@ -12,13 +12,13 @@ import lombok.Setter;
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "group_id")
+    @Column(name = "group_id", nullable = false)
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "course_id")
+    @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 }
