@@ -1,4 +1,4 @@
-package com.birdie.backend.entity;
+package com.birdie.backend.models;
 
 import jakarta.persistence.*;
 import lombok.Getter;

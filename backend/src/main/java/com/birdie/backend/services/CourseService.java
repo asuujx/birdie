@@ -1,7 +1,7 @@
-package com.birdie.backend.service;
+package com.birdie.backend.services;
 
-import com.birdie.backend.entity.Course;
-import com.birdie.backend.repository.CourseRepository;
+import com.birdie.backend.models.Course;
+import com.birdie.backend.repositories.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +13,17 @@ public class CourseService {
     @Autowired
     private CourseRepository courseRepository;
 
+    // Get all courses
+    public List<Course> getAllCourses() {
+        return courseRepository.findAll();
+    }
+
     // Create a new course
     public Course createCourse(Course course) {
         return courseRepository.save(course);
     }
 
-    // Get all courses
-    public List<Course> getAllCourses() {
-        return courseRepository.findAll();
-    }
+
 
     // Get course by ID
     public Optional<Course> getCourseById(int id) {
@@ -41,12 +43,7 @@ public class CourseService {
         return null;
     }
 
-    // Delete all courses
-    public void deleteAllCourses() {
-        courseRepository.deleteAll();
-    }
-
-    // Delete course
+    // Delete course by ID
     public void deleteCourse(int id) {
         courseRepository.deleteById(id);
     }

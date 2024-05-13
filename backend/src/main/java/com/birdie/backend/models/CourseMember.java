@@ -1,6 +1,6 @@
-package com.birdie.backend.entity;
+package com.birdie.backend.models;
 
-import com.birdie.backend.entity.enummodels.UserType;
+import com.birdie.backend.models.enummodels.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,5 +30,5 @@ public class CourseMember {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    private UserType type;
+    private Role role;
 }

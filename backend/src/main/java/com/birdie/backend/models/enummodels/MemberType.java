@@ -1,4 +1,4 @@
-package com.birdie.backend.entity.enummodels;
+package com.birdie.backend.models.enummodels;
 
 public enum MemberType {
     student,
