@@ -405,6 +405,7 @@ COPY public.tasks (task_id, course_id, name, description, due_date) FROM stdin;
 --
 
 COPY public.users (user_id, email, password, name, surname, role) FROM stdin;
+6	admin@admin.com	$2a$10$InhIOXRHU48BP5QBD3w80OOjJSjb6gNnaQFpIj3RCBR0zeDlyw8n.	admin	admin	ROLE_ADMIN
 \.
 
 
@@ -454,7 +455,7 @@ SELECT pg_catalog.setval('public.tasks_id_seq', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 5, true);
+SELECT pg_catalog.setval('public.users_id_seq', 6, true);
 
 
 --
