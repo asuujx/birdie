@@ -4,6 +4,7 @@ import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.repositories.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +16,8 @@ public class CourseService {
     private CourseRepository courseRepository;
 
     // Get all courses
-    public List<Course> getAllCourses() {
-        return courseRepository.findAll();
+    public List<Course> getAllCourses(Sort sort) {
+        return courseRepository.findAll(sort);
     }
 
     // Create a new course

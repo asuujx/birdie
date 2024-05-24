@@ -1,16 +1,14 @@
 package com.birdie.backend.controllers;
 
-
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.models.User;
-import com.birdie.backend.repositories.CourseMemberRepository;
 import com.birdie.backend.services.CourseMemberService;
 import com.birdie.backend.services.CourseService;
 import com.birdie.backend.services.FetchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,8 +27,12 @@ public class CourseController {
     private FetchService fetchService;
 
     @GetMapping
-    public List<Course> getAllCourses() {
-        return courseService.getAllCourses();
+    public List<Course> getAllCourses(@RequestParam("sort") Optional <String> sort) {
+        Sort sortOrder = sort
+                .filter("desc"::equalsIgnoreCase)
+                .map(s -> Sort.by(Sort.Order.desc("name")))
+                .orElse(Sort.by(Sort.Order.asc("name")));
+        return courseService.getAllCourses(sortOrder);
     }
 
     @PostMapping
