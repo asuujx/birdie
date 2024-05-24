@@ -11,18 +11,18 @@ public class TestController {
 
     @GetMapping("/anon")
     public String anonEndPoint() {
-        return "everyone can see this";
+        return "Everyone can see this.";
     }
 
     @GetMapping("/admins")
     @PreAuthorize("hasRole('ADMIN')")
-    public String usersEndPoint() {
+    public String adminsEndPoint() {
         return "ONLY admins can see this";
     }
 
     @GetMapping("/teachers")
     @PreAuthorize("hasRole('TEACHER')")
-    public String adminsEndPoint() {
+    public String teachersEndPoint() {
         return "ONLY teachers can see this";
     }
 
