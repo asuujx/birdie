@@ -1,6 +1,6 @@
 package com.birdie.backend.models.enummodels;
 
-public enum MemberType {
+public enum Status {
     PENDING,
     ACTIVE
 }
