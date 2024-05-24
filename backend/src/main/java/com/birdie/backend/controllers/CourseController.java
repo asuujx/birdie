@@ -2,8 +2,15 @@ package com.birdie.backend.controllers;
 
 
 import com.birdie.backend.models.Course;
+import com.birdie.backend.models.CourseMember;
+import com.birdie.backend.models.User;
+import com.birdie.backend.repositories.CourseMemberRepository;
+import com.birdie.backend.services.CourseMemberService;
 import com.birdie.backend.services.CourseService;
+import com.birdie.backend.services.FetchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,25 +22,46 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
-    // Get all courses
+    @Autowired
+    private CourseMemberService courseMemberService;
+
+    @Autowired
+    private FetchService fetchService;
+
     @GetMapping
     public List<Course> getAllCourses() {
         return courseService.getAllCourses();
     }
 
-    // Create a new course
     @PostMapping
     public Course createCourse(@RequestBody Course course) {
         return courseService.createCourse(course);
     }
 
-    // Get course by ID
     @GetMapping("/{id}")
     public Optional<Course> getCourseById(@PathVariable int id) {
         return courseService.getCourseById(id);
     }
 
-    // POST /{id}/join TODO: ONLY STRUDENT CAN ACCESS
+
+
+    @PostMapping("/{id}/join")
+    @PreAuthorize("hasRole('STUDENT') || hasRole('TEACHER')")
+    public CourseMember joinCourse(@RequestParam int userId, @PathVariable int id) {
+        User user = fetchService.getUserById(userId);
+        Course course = fetchService.getCourseById(id);
+
+        return courseMemberService.addUserToCourse(user, course);
+    }
+
+    @PostMapping("/{id}/approve")
+    @PreAuthorize("hasRole('TEACHER')")
+    public CourseMember approveMember(@RequestBody int courseMemberId) {
+        CourseMember courseMember = courseMemberService.getCourseMemberById(courseMemberId);
+
+        return courseMemberService.approveMember(courseMember);
+    }
+
     // GET /{id}/members TODO: LIST OF COURSE MEMBERS
     // DELETE /{id}/members/{member_id} TODO: DELETE COURSE MEMBER BY TEACHER
     // /{id}/members/{member_id}/approve TODO: APPROVE MEMBER TO COURSE BY TEACHER

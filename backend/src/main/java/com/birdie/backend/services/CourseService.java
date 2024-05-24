@@ -1,6 +1,7 @@
 package com.birdie.backend.services;
 
 import com.birdie.backend.models.Course;
+import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.repositories.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,6 @@ public class CourseService {
     public Course createCourse(Course course) {
         return courseRepository.save(course);
     }
-
-
 
     // Get course by ID
     public Optional<Course> getCourseById(int id) {
