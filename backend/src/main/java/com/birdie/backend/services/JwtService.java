@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -25,6 +26,12 @@ public class JwtService {
     @Value("${token.expirationms}")
     Long jwtExpirationMs;
 
+    private final UserDetailsService userDetailsService;
+
+    public JwtService(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -36,6 +43,11 @@ public class JwtService {
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String userName = extractUserName(token);
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    }
+
+    public UserDetails loadUserDetailsFromToken(String token) {
+        String username = extractUserName(token);
+        return userDetailsService.loadUserByUsername(username);
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
