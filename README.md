@@ -1,19 +1,19 @@
 # TO-DO
    ## Authorization
    - [ ] /auth
-     - [ ] POST /register
-     - [ ] POST /login
-     - [ ] GET /refresh
+     - [x] POST /register
+     - [x] POST /login
+     - [x] GET /refresh
      - [ ] GET /confirm/{confirmId}
   
    ## Account
-   - [ ] GET /account
+   - [x] GET /account
      - [ ] GET /courses
      - [ ] PUT /avatar
      - [ ] DELETE /avatar
   
    ## Courses
-   - [ ] GET /courses
+   - [x] GET /courses
      - [ ] GET /{courseId}
      - [ ] PATCH /{courseId}
      - [ ] DELETE /{courseId}
