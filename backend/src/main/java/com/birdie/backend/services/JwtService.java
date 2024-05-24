@@ -26,6 +26,9 @@ public class JwtService {
     @Value("${token.expirationms}")
     Long jwtExpirationMs;
 
+    @Value("${token.refresh-expirationms}")
+    Long jwtRefreshExpirationMs;
+
     private final UserDetailsService userDetailsService;
 
     public JwtService(UserDetailsService userDetailsService) {
@@ -40,9 +43,18 @@ public class JwtService {
         return generateToken(new HashMap<>(), userDetails);
     }
 
+    public String generateRefreshToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails);
+    }
+
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String userName = extractUserName(token);
-        return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return (userName.equals(userDetails.getUsername())) && isTokenExpired(token);
+    }
+
+    public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
+        final String userName = extractUserName(token);
+        return (userName.equals(userDetails.getUsername())) && isTokenExpired(token);
     }
 
     public UserDetails loadUserDetailsFromToken(String token) {
@@ -67,7 +79,7 @@ public class JwtService {
     }
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        return !extractExpiration(token).before(new Date());
     }
 
     private Date extractExpiration(String token) {

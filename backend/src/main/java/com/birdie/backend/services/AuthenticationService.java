@@ -1,8 +1,9 @@
 package com.birdie.backend.services;
 
-import com.birdie.backend.dto.JwtAuthenticationResponse;
-import com.birdie.backend.dto.LoginRequest;
-import com.birdie.backend.dto.RegisterRequest;
+import com.birdie.backend.dto.response.JwtAuthenticationResponse;
+import com.birdie.backend.dto.request.LoginRequest;
+import com.birdie.backend.dto.request.RefreshTokenRequest;
+import com.birdie.backend.dto.request.RegisterRequest;
 import com.birdie.backend.models.User;
 import com.birdie.backend.models.enummodels.Role;
 import com.birdie.backend.repositories.UserRepository;
@@ -35,7 +36,8 @@ public class AuthenticationService {
 
         user = userService.save(user);
         var jwt = jwtService.generateToken(user);
-        return JwtAuthenticationResponse.builder().token(jwt).build();
+        var refreshJwt = jwtService.generateRefreshToken(user);
+        return JwtAuthenticationResponse.builder().token(jwt).refreshToken(refreshJwt).build();
     }
 
 
@@ -45,6 +47,20 @@ public class AuthenticationService {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
         var jwt = jwtService.generateToken(user);
-        return JwtAuthenticationResponse.builder().token(jwt).build();
+        var refreshJwt = jwtService.generateRefreshToken(user);
+        return JwtAuthenticationResponse.builder().token(jwt).refreshToken(refreshJwt).build();
+    }
+
+    public JwtAuthenticationResponse refresh(RefreshTokenRequest refreshTokenRequest) {
+        String refreshToken = refreshTokenRequest.getRefreshToken();
+        String userName = jwtService.extractUserName(refreshToken);
+        var user = userRepository.findByEmail(userName)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token."));
+        if (jwtService.isRefreshTokenValid(refreshToken, user)) {
+            var jwt = jwtService.generateToken(user);
+            return JwtAuthenticationResponse.builder().token(jwt).refreshToken(refreshToken).build();
+        } else {
+            throw new RuntimeException("Invalid refresh token");
+        }
     }
 }

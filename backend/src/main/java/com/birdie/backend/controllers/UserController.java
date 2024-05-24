@@ -1,6 +1,6 @@
 package com.birdie.backend.controllers;
 
-import com.birdie.backend.dto.UserDetailsResponse;
+import com.birdie.backend.dto.response.UserDetailsResponse;
 import com.birdie.backend.models.User;
 import com.birdie.backend.services.JwtService;
 import com.birdie.backend.services.UserService;
