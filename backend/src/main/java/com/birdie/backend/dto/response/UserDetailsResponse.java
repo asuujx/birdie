@@ -1,4 +1,4 @@
-package com.birdie.backend.dto;
+package com.birdie.backend.dto.response;
 
 public class UserDetailsResponse {
     private int id;

@@ -1,4 +1,4 @@
-package com.birdie.backend.dto;
+package com.birdie.backend.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
