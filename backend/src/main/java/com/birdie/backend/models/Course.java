@@ -18,4 +18,8 @@ public class Course {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

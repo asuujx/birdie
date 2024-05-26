@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -46,7 +47,11 @@ public class CourseController {
         return courseService.getCourseById(id);
     }
 
-
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public Course updateCourse(@PathVariable int id, @RequestBody Map<String, Object> fields) {
+        return courseService.updateCourse(id, fields);
+    }
 
     @PostMapping("/{id}/join")
     @PreAuthorize("hasRole('STUDENT') || hasRole('TEACHER')")
@@ -65,17 +70,6 @@ public class CourseController {
         return courseMemberService.approveMember(courseMember);
     }
 
-    // GET /{id}/members TODO: LIST OF COURSE MEMBERS
-    // DELETE /{id}/members/{member_id} TODO: DELETE COURSE MEMBER BY TEACHER
-    // /{id}/members/{member_id}/approve TODO: APPROVE MEMBER TO COURSE BY TEACHER
-
-    // Update course by ID TODO: ONLY TEACHER CAN ACCESS
-    @PutMapping("/{id}")
-    public Course updateCourse(@PathVariable int id, @RequestBody Course courseData) {
-        return courseService.updateCourse(id, courseData);
-    }
-
-    // Delete course by ID TODO: ONLY TEACHER CAN ACCESS
     @DeleteMapping("/{id}")
     public void deleteCourse(@PathVariable int id) {
         courseService.deleteCourse(id);
