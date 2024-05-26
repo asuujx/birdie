@@ -8,15 +8,19 @@
   
    ## Account
    - [x] GET /account
-     - [ ] GET /courses
+     - [x] GET /courses
      - [ ] PUT /avatar
      - [ ] DELETE /avatar
   
    ## Courses
    - [x] GET /courses
-     - [ ] GET /{courseId}
-     - [ ] PATCH /{courseId}
+     - [x] GET /{courseId}
+     - [x] PATCH /{courseId}
      - [ ] DELETE /{courseId}
+
+      ### Joing and approve
+      - [ ] POST /{courseId}/join
+      - [ ] POST /{courseId}/approve 
 
       ### Members
       - [ ] GET /members
