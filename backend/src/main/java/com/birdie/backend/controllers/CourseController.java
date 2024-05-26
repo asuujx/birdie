@@ -1,5 +1,6 @@
 package com.birdie.backend.controllers;
 
+import com.birdie.backend.dto.request.ApproveMemberRequest;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.models.User;
@@ -58,8 +59,8 @@ public class CourseController {
 
     @PostMapping("/{id}/approve")
     @PreAuthorize("hasRole('TEACHER')")
-    public CourseMember approveMember(@RequestBody int courseMemberId) {
-        CourseMember courseMember = courseMemberService.getCourseMemberById(courseMemberId);
+    public CourseMember approveMember(@RequestBody ApproveMemberRequest approveMemberRequest) {
+        CourseMember courseMember = courseMemberService.getCourseMemberById(approveMemberRequest.getCourseMemberId());
 
         return courseMemberService.approveMember(courseMember);
     }
