@@ -16,14 +16,14 @@
    - [x] GET /courses
      - [x] GET /{courseId}
      - [x] PATCH /{courseId}
-     - [ ] DELETE /{courseId}
+     - [x] DELETE /{courseId}
 
       ### Joing and approve
-      - [ ] POST /{courseId}/join
-      - [ ] POST /{courseId}/approve 
+      - [x] POST /{courseId}/join
+      - [x] POST /{courseId}/approve 
 
       ### Members
-      - [ ] GET /members
+      - [x] GET /members
          - [ ] GET /{memberId}
          - [ ] DELETE /{memberId}
          - [ ] GET /confirm

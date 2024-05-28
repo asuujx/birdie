@@ -1,6 +1,7 @@
 package com.birdie.backend.controllers;
 
 import com.birdie.backend.dto.request.ApproveMemberRequest;
+import com.birdie.backend.dto.response.CourseMemberDetailsResponse;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.models.User;
@@ -53,6 +54,11 @@ public class CourseController {
         return courseService.updateCourse(id, fields);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteCourse(@PathVariable int id) {
+        courseService.deleteCourse(id);
+    }
+
     @PostMapping("/{id}/join")
     @PreAuthorize("hasRole('STUDENT') || hasRole('TEACHER')")
     public CourseMember joinCourse(@RequestParam int userId, @PathVariable int id) {
@@ -70,8 +76,8 @@ public class CourseController {
         return courseMemberService.approveMember(courseMember);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteCourse(@PathVariable int id) {
-        courseService.deleteCourse(id);
+    @GetMapping("/{id}/members")
+    public List<CourseMemberDetailsResponse> getCourseMembers(@PathVariable int id) {
+        return courseMemberService.getCourseMembers(id);
     }
 }
