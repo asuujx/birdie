@@ -41,7 +41,7 @@ public class UserController {
 
         if (jwtService.isTokenValid(jwt, userDetails)) {
             User user = userService.getUserByEmail(userDetails.getUsername());
-            return new UserDetailsResponse(user.getId(), user.getEmail(), user.getName(), user.getSurname());
+            return new UserDetailsResponse(user.getId(), user.getEmail(), user.getName(), user.getSurname(), user.getRole());
         } else {
             throw new RuntimeException("Invalid or expired token");
         }
