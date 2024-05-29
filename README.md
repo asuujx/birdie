@@ -24,8 +24,8 @@
 
       ### Members
       - [x] GET /members
-         - [ ] GET /{memberId}
-         - [ ] DELETE /{memberId}
+         - [ ] PATCH /{memberId}
+         - [x] DELETE /{memberId}
          - [ ] GET /confirm
   
       ### Groups

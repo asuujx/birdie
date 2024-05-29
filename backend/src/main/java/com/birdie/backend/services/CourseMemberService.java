@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +43,17 @@ public class CourseMemberService {
     public CourseMember getCourseMemberById(int courseMemberId) {
         return courseMemberRepository.findById(courseMemberId)
                 .orElseThrow(() -> new RuntimeException("CourseMember not found"));
+    }
+
+    public void deleteCourseMember(int courseId, int memberId) {
+        CourseMember courseMember = courseMemberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("CourseMember not found with id" + memberId));
+
+        if (courseMember.getCourse().getId() != courseId) {
+            throw new RuntimeException("CourseMember does not belong to the specified course");
+        }
+
+        courseMemberRepository.delete(courseMember);
     }
 
     public List<CourseMemberDetailsResponse> getCourseMembers(int courseId) {

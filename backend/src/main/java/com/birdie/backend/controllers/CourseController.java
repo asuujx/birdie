@@ -105,4 +105,10 @@ public class CourseController {
     public List<CourseMemberDetailsResponse> getCourseMembers(@PathVariable int id) {
         return courseMemberService.getCourseMembers(id);
     }
+
+    @DeleteMapping("/{id}/members/{memberId}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public void deleteCourseMember(@PathVariable int id, @PathVariable int memberId) {
+        courseMemberService.deleteCourseMember(id, memberId);
+    }
 }
