@@ -3,8 +3,10 @@ package com.birdie.backend.services;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.models.User;
+import com.birdie.backend.models.enummodels.Status;
 import com.birdie.backend.repositories.CourseMemberRepository;
 import com.birdie.backend.repositories.CourseRepository;
+import com.birdie.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -20,14 +22,30 @@ public class CourseService {
     private CourseRepository courseRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private CourseMemberRepository courseMemberRepository;
 
     public List<Course> getAllCourses(Sort sort) {
         return courseRepository.findAll(sort);
     }
 
-    public Course createCourse(Course course) {
-        return courseRepository.save(course);
+    public Course createCourse(Course course, int userId) {
+        Course createdCourse = courseRepository.save(course);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id " + userId));
+
+        CourseMember courseMember = CourseMember.builder()
+                .user(user)
+                .course(createdCourse)
+                .status(Status.ACTIVE)
+                .build();
+
+        courseMemberRepository.save(courseMember);
+
+        return createdCourse;
     }
 
     public Optional<Course> getCourseById(int id) {

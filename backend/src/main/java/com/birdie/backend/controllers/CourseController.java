@@ -44,8 +44,19 @@ public class CourseController {
     }
 
     @PostMapping
-    public Course createCourse(@RequestBody Course course) {
-        return courseService.createCourse(course);
+    public Course createCourse(@RequestHeader("Authorization") String token, @RequestBody Course course) {
+        String jwt = token.replace("Bearer ", "");
+        UserDetails userDetails;
+
+        try {
+            userDetails = jwtService.loadUserDetailsFromToken(jwt);
+        } catch (Exception e) {
+            throw new RuntimeException("Invaild token ", e);
+        }
+
+        User user = userService.getUserByEmail(userDetails.getUsername());
+
+        return courseService.createCourse(course, user.getId());
     }
 
     @GetMapping("/{id}")
