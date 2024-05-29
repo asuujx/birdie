@@ -271,7 +271,8 @@ CREATE TABLE public.users (
     password character varying(255) NOT NULL,
     name character varying(100) NOT NULL,
     surname character varying(100) NOT NULL,
-    role public.role_enum NOT NULL
+    role public.role_enum NOT NULL,
+    avatar character varying(128)
 );
 
 
@@ -354,6 +355,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.u
 
 COPY public.course_members (course_member_id, user_id, course_id, group_id, status) FROM stdin;
 1	9	1	\N	PENDING
+2	7	4	\N	ACTIVE
 \.
 
 
@@ -362,9 +364,10 @@ COPY public.course_members (course_member_id, user_id, course_id, group_id, stat
 --
 
 COPY public.courses (course_id, name) FROM stdin;
-1	Programowanie 1
 2	Programowanie 2
 3	Programowanie 3
+1	Programowanie 5
+4	Test course
 \.
 
 
@@ -404,11 +407,11 @@ COPY public.tasks (task_id, course_id, name, description, due_date) FROM stdin;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (user_id, email, password, name, surname, role) FROM stdin;
-6	admin@admin.com	$2a$10$InhIOXRHU48BP5QBD3w80OOjJSjb6gNnaQFpIj3RCBR0zeDlyw8n.	admin	admin	ROLE_ADMIN
-7	test@test.com	$2a$10$prvXyVn7EADbmo1Wml5evOqyDRLgeisiFKUnnoGqwsnt5MP/DugUe	Test	Testy	ROLE_STUDENT
-8	test2@test2.com	$2a$10$hF9oolGZGJjAvmm2FxTDM.WWUfsKyZ2EVVpRAqszU9UPwyRJ3REpK	Test2	Testy2	ROLE_STUDENT
-9	test_user@test.com	$2a$10$WTE3W171pXy4hOQzPwBOXefXUR456z5kiPp9Ad.ChH4Ce/KtWiY/K	Test	User	ROLE_STUDENT
+COPY public.users (user_id, email, password, name, surname, role, avatar) FROM stdin;
+6	admin@admin.com	$2a$10$InhIOXRHU48BP5QBD3w80OOjJSjb6gNnaQFpIj3RCBR0zeDlyw8n.	admin	admin	ROLE_ADMIN	\N
+8	test2@test2.com	$2a$10$hF9oolGZGJjAvmm2FxTDM.WWUfsKyZ2EVVpRAqszU9UPwyRJ3REpK	Test2	Testy2	ROLE_STUDENT	\N
+9	test_user@test.com	$2a$10$WTE3W171pXy4hOQzPwBOXefXUR456z5kiPp9Ad.ChH4Ce/KtWiY/K	Test	User	ROLE_STUDENT	\N
+7	test@test.com	$2a$10$prvXyVn7EADbmo1Wml5evOqyDRLgeisiFKUnnoGqwsnt5MP/DugUe	Test	Testy	ROLE_TEACHER	\N
 \.
 
 
@@ -416,14 +419,14 @@ COPY public.users (user_id, email, password, name, surname, role) FROM stdin;
 -- Name: course_members_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.course_members_id_seq', 1, true);
+SELECT pg_catalog.setval('public.course_members_id_seq', 2, true);
 
 
 --
 -- Name: courses_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.courses_id_seq', 3, true);
+SELECT pg_catalog.setval('public.courses_id_seq', 4, true);
 
 
 --
