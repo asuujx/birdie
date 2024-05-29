@@ -37,6 +37,7 @@ public class AuthenticationService {
         user = userService.save(user);
         var jwt = jwtService.generateToken(user);
         var refreshJwt = jwtService.generateRefreshToken(user);
+
         return JwtAuthenticationResponse.builder().token(jwt).refreshToken(refreshJwt).build();
     }
 
@@ -48,6 +49,7 @@ public class AuthenticationService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
         var jwt = jwtService.generateToken(user);
         var refreshJwt = jwtService.generateRefreshToken(user);
+
         return JwtAuthenticationResponse.builder().token(jwt).refreshToken(refreshJwt).build();
     }
 
@@ -56,6 +58,7 @@ public class AuthenticationService {
         String userName = jwtService.extractUserName(refreshToken);
         var user = userRepository.findByEmail(userName)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token."));
+
         if (jwtService.isRefreshTokenValid(refreshToken, user)) {
             var jwt = jwtService.generateToken(user);
             return JwtAuthenticationResponse.builder().token(jwt).refreshToken(refreshToken).build();

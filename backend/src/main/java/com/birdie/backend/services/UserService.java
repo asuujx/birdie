@@ -2,7 +2,9 @@ package com.birdie.backend.services;
 
 import com.birdie.backend.models.User;
 import com.birdie.backend.repositories.UserRepository;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

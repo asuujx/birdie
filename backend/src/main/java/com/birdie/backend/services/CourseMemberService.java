@@ -7,12 +7,10 @@ import com.birdie.backend.models.User;
 import com.birdie.backend.models.enummodels.Status;
 import com.birdie.backend.repositories.CourseMemberRepository;
 import com.birdie.backend.repositories.CourseRepository;
-import com.birdie.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,6 +69,7 @@ public class CourseMemberService {
         response.setName(courseMember.getUser().getName());
         response.setSurname(courseMember.getUser().getSurname());
         response.setGroup(courseMember.getGroup() != null ? courseMember.getGroup().getId() : null);
+
         return response;
     }
 }

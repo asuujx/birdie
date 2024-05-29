@@ -6,8 +6,4 @@ public class ApproveMemberRequest {
     public int getCourseMemberId() {
         return courseMemberId;
     }
-
-    public void setCourseMemberId(int courseMemberId) {
-        this.courseMemberId = courseMemberId;
-    }
 }

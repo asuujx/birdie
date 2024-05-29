@@ -6,6 +6,7 @@ import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.models.User;
 import com.birdie.backend.services.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/courses")
 public class CourseController {
+
     @Autowired
     private CourseService courseService;
 
@@ -40,6 +42,7 @@ public class CourseController {
                 .filter("desc"::equalsIgnoreCase)
                 .map(s -> Sort.by(Sort.Order.desc("name")))
                 .orElse(Sort.by(Sort.Order.asc("name")));
+
         return courseService.getAllCourses(sortOrder);
     }
 

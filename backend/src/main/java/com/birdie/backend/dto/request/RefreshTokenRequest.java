@@ -15,5 +15,4 @@ public class RefreshTokenRequest {
     public String getRefreshToken() {
         return refreshToken;
     }
-
 }
