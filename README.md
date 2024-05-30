@@ -13,6 +13,7 @@
      - [ ] DELETE /avatar
   
    ## Courses
+   - [x] POST /coruses
    - [x] GET /courses
      - [x] GET /{courseId}
      - [x] PATCH /{courseId}
