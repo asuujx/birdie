@@ -93,6 +93,11 @@ public class CourseController {
 
         User user = userService.getUserByEmail(userDetails.getUsername());
 
+        Optional<CourseMember> existingCourseMember = courseMemberService.findByUserAndCourse(user, course);
+        if (existingCourseMember.isPresent()) {
+            throw new RuntimeException("User is already a member of this course");
+        }
+
         return courseMemberService.addUserToCourse(user, course);
     }
 
