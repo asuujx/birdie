@@ -7,28 +7,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
+    private final TaskService taskService;
+
     @Autowired
-    private TaskService taskService;
-
-    @GetMapping("/{id}")
-    public Task getTaskById(@PathVariable int id) {
-        return taskService.getTaskById(id);
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
-    @PostMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
-    public Task updateTask(@PathVariable int id, @RequestBody TaskUpdateRequest taskUpdateRequest) {
-        return taskService.updateTask(id, taskUpdateRequest);
+    @GetMapping("/{taskId}")
+    public Task getTaskById(@PathVariable int taskId) {
+        return taskService.getTaskById(taskId);
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/{taskId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public void deleteTask(@PathVariable int id) {
-        taskService.deleteTask(id);
+    public Task updateTask(@PathVariable int taskId, @RequestBody TaskUpdateRequest taskUpdateRequest) {
+        return taskService.updateTask(taskId, taskUpdateRequest);
+    }
+
+    @DeleteMapping("/{taskId}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public void deleteTask(@PathVariable int taskId) {
+        taskService.deleteTask(taskId);
     }
 }

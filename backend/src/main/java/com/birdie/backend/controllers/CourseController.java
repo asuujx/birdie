@@ -5,13 +5,10 @@ import com.birdie.backend.dto.response.CourseMemberDetailsResponse;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.models.Task;
-import com.birdie.backend.models.User;
 import com.birdie.backend.services.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,120 +18,75 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/courses")
 public class CourseController {
+    private final CourseService courseService;
+    private final CourseMemberService courseMemberService;
+    private final TaskService taskService;
 
     @Autowired
-    private CourseService courseService;
-
-    @Autowired
-    private CourseMemberService courseMemberService;
-
-    @Autowired
-    private FetchService fetchService;
-
-    @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private TaskService taskService;
+    public CourseController(CourseService courseService, CourseMemberService courseMemberService, TaskService taskService) {
+        this.courseService = courseService;
+        this.courseMemberService = courseMemberService;
+        this.taskService = taskService;
+    }
 
     @GetMapping
-    public List<Course> getAllCourses(@RequestParam("sort") Optional <String> sort) {
-        Sort sortOrder = sort
-                .filter("desc"::equalsIgnoreCase)
-                .map(s -> Sort.by(Sort.Order.desc("name")))
-                .orElse(Sort.by(Sort.Order.asc("name")));
-
-        return courseService.getAllCourses(sortOrder);
+    public List<Course> getAllCourses(@RequestParam("sort") Optional<String> sort) {
+        return courseService.getAllCourses(sort);
     }
 
     @PostMapping
-    public Course createCourse(@RequestHeader("Authorization") String token, @RequestBody Course course) {
-        String jwt = token.replace("Bearer ", "");
-        UserDetails userDetails;
-
-        try {
-            userDetails = jwtService.loadUserDetailsFromToken(jwt);
-        } catch (Exception e) {
-            throw new RuntimeException("Invaild token ", e);
-        }
-
-        User user = userService.getUserByEmail(userDetails.getUsername());
-
-        return courseService.createCourse(course, user.getId());
-    }
-
-    @GetMapping("/{id}")
-    public Optional<Course> getCourseById(@PathVariable int id) {
-        return courseService.getCourseById(id);
-    }
-
-    @PatchMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Course updateCourse(@PathVariable int id, @RequestBody Map<String, Object> fields) {
-        return courseService.updateCourse(id, fields);
+    public Course createCourse(@RequestHeader("Authorization") String token, @RequestBody Course course) {
+        return courseService.createCourse(token, course);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteCourse(@PathVariable int id) {
-        courseService.deleteCourse(id);
+    @GetMapping("/{courseId}")
+    public Optional<Course> getCourseById(@PathVariable int courseId) {
+        return courseService.getCourseById(courseId);
     }
 
-    @PostMapping("/{id}/join")
+    @PatchMapping("/{courseId}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public Course updateCourse(@PathVariable int courseId, @RequestBody Map<String, Object> fields) {
+        return courseService.updateCourse(courseId, fields);
+    }
+
+    @DeleteMapping("/{courseId}")
+    public void deleteCourse(@PathVariable int courseId) {
+        courseService.deleteCourse(courseId);
+    }
+
+    @PostMapping("/{courseId}/join")
     @PreAuthorize("hasRole('STUDENT') || hasRole('TEACHER')")
-    public CourseMember joinCourse(@RequestHeader("Authorization") String token, @PathVariable int id) {
-        String jwt = token.replace("Bearer ", "");
-        UserDetails userDetails;
-        Course course = fetchService.getCourseById(id);
-
-        try {
-            userDetails = jwtService.loadUserDetailsFromToken(jwt);
-        } catch ( Exception e) {
-            throw new RuntimeException("Invalid token", e);
-        }
-
-        User user = userService.getUserByEmail(userDetails.getUsername());
-
-        Optional<CourseMember> existingCourseMember = courseMemberService.findByUserAndCourse(user, course);
-        if (existingCourseMember.isPresent()) {
-            throw new RuntimeException("User is already a member of this course");
-        }
-
-        return courseMemberService.addUserToCourse(user, course);
+    public CourseMember joinCourse(@RequestHeader("Authorization") String token, @PathVariable int courseId) {
+        return courseMemberService.addUserToCourse(token, courseId);
     }
 
-    @PostMapping("/{id}/approve")
+    @PostMapping("/{courseId}/approve")
     @PreAuthorize("hasRole('TEACHER')")
     public CourseMember approveMember(@RequestBody ApproveMemberRequest approveMemberRequest) {
-        CourseMember courseMember = courseMemberService.getCourseMemberById(approveMemberRequest.getCourseMemberId());
-
-        return courseMemberService.approveMember(courseMember);
+        return courseMemberService.approveMember(approveMemberRequest);
     }
 
-    @GetMapping("/{id}/members")
-    public List<CourseMemberDetailsResponse> getCourseMembers(@PathVariable int id) {
-        return courseMemberService.getCourseMembers(id);
+    @GetMapping("/{courseId}/members")
+    public List<CourseMemberDetailsResponse> getCourseMembers(@PathVariable int courseId) {
+        return courseMemberService.getCourseMembers(courseId);
     }
 
-    @DeleteMapping("/{id}/members/{memberId}")
+    @DeleteMapping("/{courseId}/members/{memberId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public void deleteCourseMember(@PathVariable int id, @PathVariable int memberId) {
-        courseMemberService.deleteCourseMember(id, memberId);
+    public void deleteCourseMember(@PathVariable int courseId, @PathVariable int memberId) {
+        courseMemberService.deleteCourseMember(courseId, memberId);
     }
 
-    // TASK RELATED ENDPOINTS
-
-    @GetMapping("/{id}/tasks")
-    // @PreAuthorize("hasRole('ACTIVE')")
-    public List<Task> getTasks(@PathVariable int id) {
-        return taskService.getAllTasksByCourse(id);
+    @GetMapping("/{courseId}/tasks")
+    public List<Task> getCourseTasks(@PathVariable int courseId) {
+        return taskService.getAllTasksByCourse(courseId);
     }
 
-    @PostMapping("/{id}/tasks")
+    @PostMapping("/{courseId}/tasks")
     @PreAuthorize("hasRole('TEACHER')")
-    public Task createTask(@PathVariable int id, @RequestBody Task task) {
-        return taskService.createTask(id, task);
+    public Task createCourseTask(@PathVariable int courseId, @RequestBody Task task) {
+        return taskService.createTask(courseId, task);
     }
 }

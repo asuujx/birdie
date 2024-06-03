@@ -6,36 +6,51 @@ import com.birdie.backend.models.User;
 import com.birdie.backend.models.enummodels.Status;
 import com.birdie.backend.repositories.CourseMemberRepository;
 import com.birdie.backend.repositories.CourseRepository;
-import com.birdie.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
-    @Autowired
-    private CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
+    private final CourseMemberRepository courseMemberRepository;
+    private final JwtService jwtService;
+    private final UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private CourseMemberRepository courseMemberRepository;
-
-    public List<Course> getAllCourses(Sort sort) {
-        return courseRepository.findAll(sort);
+    public CourseService(CourseRepository courseRepository, CourseMemberRepository courseMemberRepository, JwtService jwtService, UserService userService) {
+        this.courseRepository = courseRepository;
+        this.courseMemberRepository = courseMemberRepository;
+        this.jwtService = jwtService;
+        this.userService = userService;
     }
 
-    public Course createCourse(Course course, int userId) {
-        Course createdCourse = courseRepository.save(course);
+    public List<Course> getAllCourses(Optional<String> sort) {
+        Sort sortOrder = sort
+                .filter("desc"::equalsIgnoreCase)
+                .map(s -> Sort.by(Sort.Order.desc("name")))
+                .orElse(Sort.by(Sort.Order.asc("name")));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id " + userId));
+        return courseRepository.findAll(sortOrder);
+    }
+
+    public Course createCourse(String token, Course course) {
+        String jwt = token.replace("Bearer ", "");
+        Course createdCourse = courseRepository.save(course);
+        UserDetails userDetails;
+
+        try {
+            userDetails = jwtService.loadUserDetailsFromToken(jwt);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid token ", e);
+        }
+
+        User user = userService.getUserByEmail(userDetails.getUsername());
 
         CourseMember courseMember = CourseMember.builder()
                 .user(user)
@@ -48,35 +63,28 @@ public class CourseService {
         return createdCourse;
     }
 
-    public Optional<Course> getCourseById(int id) {
-        return courseRepository.findById(id);
+    public Optional<Course> getCourseById(int courseId) {
+        return courseRepository.findById(courseId);
     }
 
-    public List<Course> getCoursesByUser(User user) {
-        return courseMemberRepository.findByUser(user)
-                .stream()
-                .map(CourseMember::getCourse)
-                .collect(Collectors.toList());
-    }
-
-    public Course updateCourse(int id, Map<String, Object> fields) {
-        Optional<Course> course = courseRepository.findById(id);
+    public Course updateCourse(int courseId, Map<String, Object> fields) {
+        Optional<Course> course = courseRepository.findById(courseId);
 
         if (course.isPresent()) {
             Course existingCourse = course.get();
             fields.forEach((key, value) -> {
                 if (key.equals("name")) {
                     existingCourse.setName((String) value);
-                    // add more fields as necessary
                 }
             });
+
             return courseRepository.save(existingCourse);
         }
 
         return null;
     }
     
-    public void deleteCourse(int id) {
-        courseRepository.deleteById(id);
+    public void deleteCourse(int courseId) {
+        courseRepository.deleteById(courseId);
     }
 }

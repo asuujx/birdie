@@ -9,15 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TaskService {
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
+    private final CourseRepository courseRepository;
 
     @Autowired
-    private CourseRepository courseRepository;
+    public TaskService(TaskRepository taskRepository, CourseRepository courseRepository) {
+        this.taskRepository = taskRepository;
+        this.courseRepository = courseRepository;
+    }
 
     public List<Task> getAllTasksByCourse(int id) {
         Course course = courseRepository.findById(id)
