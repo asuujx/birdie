@@ -4,6 +4,7 @@ import com.birdie.backend.dto.request.ApproveMemberRequest;
 import com.birdie.backend.dto.response.CourseMemberDetailsResponse;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
+import com.birdie.backend.models.Task;
 import com.birdie.backend.models.User;
 import com.birdie.backend.services.*;
 
@@ -35,6 +36,9 @@ public class CourseController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TaskService taskService;
 
     @GetMapping
     public List<Course> getAllCourses(@RequestParam("sort") Optional <String> sort) {
@@ -118,5 +122,19 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     public void deleteCourseMember(@PathVariable int id, @PathVariable int memberId) {
         courseMemberService.deleteCourseMember(id, memberId);
+    }
+
+    // TASK RELATED ENDPOINTS
+
+    @GetMapping("/{id}/tasks")
+    // @PreAuthorize("hasRole('ACTIVE')")
+    public List<Task> getTasks(@PathVariable int id) {
+        return taskService.getAllTasksByCourse(id);
+    }
+
+    @PostMapping("/{id}/tasks")
+    @PreAuthorize("hasRole('TEACHER')")
+    public Task createTask(@RequestBody Task task) {
+        return taskService.createTask(task);
     }
 }

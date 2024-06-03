@@ -36,13 +36,13 @@
         - [ ] GET /leave
   
       ### Tasks
-      - [ ] GET /tasks
-      - [ ] POST /tasks
+      - [x] GET /tasks
+      - [x] POST /tasks
 
    ## Tasks
-   - [ ] GET /tasks/{taskId}
-   - [ ] PATCH /tasks/{taskId}
-   - [ ] DELETE tasks/{taskId}
+   - [x] GET /tasks/{taskId}
+   - [x] PATCH /tasks/{taskId}
+   - [x] DELETE tasks/{taskId}
   
    - [ ] GET tasks/{taskId}/solutions
    - [ ] POST tasks/{taskId}/solutions

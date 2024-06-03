@@ -28,5 +28,5 @@ public class Task {
     private String description;
 
     @Column(name = "due_date")
-    private Date due_date;
+    private Date dueDate;
 }
