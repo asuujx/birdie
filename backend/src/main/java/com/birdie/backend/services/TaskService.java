@@ -26,7 +26,12 @@ public class TaskService {
         return taskRepository.findByCourse(course);
     }
 
-    public Task createTask(Task task) {
+    public Task createTask(int courseId, Task task) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+
+        task.setCourse(course);
+
         return taskRepository.save(task);
     }
 

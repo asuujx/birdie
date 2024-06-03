@@ -134,7 +134,7 @@ public class CourseController {
 
     @PostMapping("/{id}/tasks")
     @PreAuthorize("hasRole('TEACHER')")
-    public Task createTask(@RequestBody Task task) {
-        return taskService.createTask(task);
+    public Task createTask(@PathVariable int id, @RequestBody Task task) {
+        return taskService.createTask(id, task);
     }
 }
