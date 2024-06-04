@@ -5,7 +5,6 @@ import com.birdie.backend.models.Course;
 import com.birdie.backend.models.Task;
 import com.birdie.backend.repositories.CourseRepository;
 import com.birdie.backend.repositories.TaskRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +14,6 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final CourseRepository courseRepository;
 
-    @Autowired
     public TaskService(TaskRepository taskRepository, CourseRepository courseRepository) {
         this.taskRepository = taskRepository;
         this.courseRepository = courseRepository;

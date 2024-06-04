@@ -5,7 +5,6 @@ import com.birdie.backend.models.enummodels.Role;
 import com.birdie.backend.repositories.UserRepository;
 import com.birdie.backend.services.UserService;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.boot.CommandLineRunner;
@@ -13,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class SeedDataConfig implements CommandLineRunner {
 
@@ -21,8 +19,14 @@ public class SeedDataConfig implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
 
+    public SeedDataConfig(UserRepository userRepository, PasswordEncoder passwordEncoder, UserService userService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
+    }
+
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
         if (userRepository.count() == 0) {
 

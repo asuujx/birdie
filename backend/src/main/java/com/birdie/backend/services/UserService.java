@@ -7,8 +7,6 @@ import com.birdie.backend.models.User;
 import com.birdie.backend.repositories.CourseMemberRepository;
 import com.birdie.backend.repositories.UserRepository;
 
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,12 +16,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final CourseMemberRepository courseMemberRepository;
     private final JwtService jwtService;
-    private final UserService userService;
+
+    public UserService(UserRepository userRepository, CourseMemberRepository courseMemberRepository, JwtService jwtService) {
+        this.userRepository = userRepository;
+        this.courseMemberRepository = courseMemberRepository;
+        this.jwtService = jwtService;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -51,7 +53,7 @@ public class UserService implements UserDetailsService {
         }
 
         if (jwtService.isTokenValid(jwt, userDetails)) {
-            User user = userService.getUserByEmail(userDetails.getUsername());
+            User user = getUserByEmail(userDetails.getUsername());
             return new UserDetailsResponse(user.getId(), user.getEmail(), user.getName(), user.getSurname(), user.getRole());
         } else {
             throw new RuntimeException("Invalid or expired token");
@@ -68,7 +70,7 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("Invalid token", e);
         }
 
-        User user = userService.getUserByEmail(userDetails.getUsername());
+        User user = getUserByEmail(userDetails.getUsername());
 
         return courseMemberRepository.findByUser(user)
                 .stream()

@@ -8,7 +8,6 @@ import com.birdie.backend.models.User;
 import com.birdie.backend.models.enummodels.Status;
 import com.birdie.backend.repositories.CourseMemberRepository;
 import com.birdie.backend.repositories.CourseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -23,16 +22,13 @@ public class CourseMemberService {
     private final JwtService jwtService;
     private final UserService userService;
     private final CourseService courseService;
-    private final CourseMemberService courseMemberService;
 
-    @Autowired
-    public CourseMemberService(CourseMemberRepository courseMemberRepository, CourseRepository courseRepository, JwtService jwtService, UserService userService, CourseService courseService, CourseMemberService courseMemberService) {
+    public CourseMemberService(CourseMemberRepository courseMemberRepository, CourseRepository courseRepository, JwtService jwtService, UserService userService, CourseService courseService) {
         this.courseMemberRepository = courseMemberRepository;
         this.courseRepository = courseRepository;
         this.jwtService = jwtService;
         this.userService = userService;
         this.courseService = courseService;
-        this.courseMemberService = courseMemberService;
     }
 
     public CourseMember addUserToCourse(String token, int courseId) {
@@ -48,7 +44,7 @@ public class CourseMemberService {
         }
 
         User user = userService.getUserByEmail(userDetails.getUsername());
-        Optional<CourseMember> existingCourseMember = courseMemberService.findByUserAndCourse(user, course);
+        Optional<CourseMember> existingCourseMember = findByUserAndCourse(user, course);
 
         if (existingCourseMember.isPresent()) {
             throw new RuntimeException("User is already a member of this course");
@@ -69,7 +65,7 @@ public class CourseMemberService {
     }
 
     public CourseMember approveMember(ApproveMemberRequest approveMemberRequest) {
-        CourseMember courseMember = courseMemberService.getCourseMemberById(approveMemberRequest.getCourseMemberId());
+        CourseMember courseMember = getCourseMemberById(approveMemberRequest.getCourseMemberId());
         courseMember.setStatus(Status.ACTIVE);
 
         return courseMemberRepository.save(courseMember);

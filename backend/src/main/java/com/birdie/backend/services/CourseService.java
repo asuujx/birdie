@@ -6,7 +6,6 @@ import com.birdie.backend.models.User;
 import com.birdie.backend.models.enummodels.Status;
 import com.birdie.backend.repositories.CourseMemberRepository;
 import com.birdie.backend.repositories.CourseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,6 @@ public class CourseService {
     private final JwtService jwtService;
     private final UserService userService;
 
-    @Autowired
     public CourseService(CourseRepository courseRepository, CourseMemberRepository courseMemberRepository, JwtService jwtService, UserService userService) {
         this.courseRepository = courseRepository;
         this.courseMemberRepository = courseMemberRepository;
