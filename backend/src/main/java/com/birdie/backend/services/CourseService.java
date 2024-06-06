@@ -62,11 +62,13 @@ public class CourseService {
     }
 
     public Optional<Course> getCourseById(int courseId) {
-        return courseRepository.findById(courseId);
+        return Optional.ofNullable(courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found with id " + courseId)));
     }
 
-    public Course updateCourse(int courseId, Map<String, Object> fields) {
-        Optional<Course> course = courseRepository.findById(courseId);
+    public Optional<Course> updateCourse(int courseId, Map<String, Object> fields) {
+        Optional<Course> course = Optional.ofNullable(courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found with id " + courseId)));
 
         if (course.isPresent()) {
             Course existingCourse = course.get();
@@ -76,7 +78,7 @@ public class CourseService {
                 }
             });
 
-            return courseRepository.save(existingCourse);
+            return Optional.of(courseRepository.save(existingCourse));
         }
 
         return null;
