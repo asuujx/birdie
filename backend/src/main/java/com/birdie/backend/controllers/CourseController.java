@@ -41,7 +41,7 @@ public class CourseController {
     }
 
     @GetMapping("/{courseId}")
-    public Optional<Course> getCourseById(@PathVariable int courseId) {
+    public Course getCourseById(@PathVariable int courseId) {
         return courseService.getCourseById(courseId);
     }
 

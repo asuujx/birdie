@@ -34,8 +34,7 @@ public class CourseMemberService {
     public CourseMember addUserToCourse(String token, int courseId) {
         String jwt = token.replace("Bearer ", "");
         UserDetails userDetails;
-        Course course = courseService.getCourseById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id " + courseId));
+        Course course = courseService.getCourseById(courseId);
 
         try {
             userDetails = jwtService.loadUserDetailsFromToken(jwt);

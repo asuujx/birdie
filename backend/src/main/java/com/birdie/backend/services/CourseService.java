@@ -61,27 +61,22 @@ public class CourseService {
         return createdCourse;
     }
 
-    public Optional<Course> getCourseById(int courseId) {
-        return Optional.ofNullable(courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id " + courseId)));
+    public Course getCourseById(int courseId) {
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found with id " + courseId));
     }
 
-    public Optional<Course> updateCourse(int courseId, Map<String, Object> fields) {
-        Optional<Course> course = Optional.ofNullable(courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id " + courseId)));
+    public Course updateCourse(int courseId, Map<String, Object> fields) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found with id " + courseId));
 
-        if (course.isPresent()) {
-            Course existingCourse = course.get();
-            fields.forEach((key, value) -> {
-                if (key.equals("name")) {
-                    existingCourse.setName((String) value);
-                }
-            });
+        fields.forEach((key, value) -> {
+            if (key.equals("name")) {
+                course.setName((String) value);
+            }
+        });
 
-            return Optional.of(courseRepository.save(existingCourse));
-        }
-
-        return null;
+        return courseRepository.save(course);
     }
     
     public void deleteCourse(int courseId) {
