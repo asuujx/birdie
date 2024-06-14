@@ -1,10 +1,17 @@
 package com.birdie.backend.models;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @Table(name = "solutions")
 public class Solution {
     @Id
@@ -22,4 +29,7 @@ public class Solution {
 
     @Column(name = "date_added", nullable = false)
     private Date dateAdded;
+
+    //@OneToMany(mappedBy = "solution", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    //private List<File> files;
 }

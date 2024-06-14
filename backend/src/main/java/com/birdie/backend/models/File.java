@@ -17,8 +17,11 @@ public class File {
     @Column(name = "file_id", nullable = false)
     private int id;
 
-    @Column(name = "file_path", nullable = false)
-    private String file_path;
+    @Column(name = "url", nullable = false)
+    private String url;
+
+    @Column(name = "original_name")
+    private String original_name;
 
     @Column(name = "date_added", nullable = false)
     private Date date_added;
