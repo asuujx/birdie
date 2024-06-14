@@ -1,8 +1,6 @@
 package com.birdie.backend.controllers;
 
 import com.birdie.backend.dto.request.TaskUpdateRequest;
-import com.birdie.backend.dto.response.UserDetailsResponse;
-import com.birdie.backend.models.Solution;
 import com.birdie.backend.models.Task;
 import com.birdie.backend.models.User;
 import com.birdie.backend.services.FileSystemStorageService;
@@ -65,5 +63,10 @@ public class TaskController {
         User user = userService.getUserByEmail(userDetails.getUsername());
 
         return fileSystemStorageService.store(files, user.getId(), taskId);
+    }
+
+    @DeleteMapping("/{taskId}/solutions/{solutionId}")
+    public void deleteSolution(@PathVariable int taskId, @PathVariable int solutionId) {
+        fileSystemStorageService.deleteSolution(taskId, solutionId);
     }
 }

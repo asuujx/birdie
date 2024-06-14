@@ -7,7 +7,6 @@ import com.birdie.backend.repositories.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -103,30 +102,44 @@ public class FileSystemStorageService implements StorageService {
         return response;
     }
 
+    public void deleteSolution(int taskId, int solutionId) {
+        Solution solution = solutionRepository.findByIdAndTaskId(solutionId, taskId)
+                .orElseThrow(() -> new StorageException("Solution not found."));
+
+        // Delete the files from the filesystem
+        List<File> files = fileRepository.findBySolution(solution);
+        for (File file : files) {
+            try {
+                Path filePath = this.rootLocation.resolve(
+                                Paths.get(Objects.requireNonNull(file.getOriginal_name())))
+                        .normalize().toAbsolutePath();
+                Files.deleteIfExists(filePath);
+            } catch (IOException e) {
+                throw new StorageException("Failed to delete file: " + file.getOriginal_name(), e);
+            }
+        }
+
+        // Delete the files from the database
+        fileRepository.deleteAll(files);
+
+        // Delete the solution
+        solutionRepository.delete(solution);
+    }
+
     @Override
     public Stream<Path> loadAll() {
-        try (Stream<Path> stream = Files.walk(this.rootLocation, 1)) {
-            return stream
-                    .filter(path -> !path.equals(this.rootLocation))
-                    .map(this.rootLocation::relativize)
-                    .toList()
-                    .stream();
-        } catch (IOException e) {
-            throw new StorageException("Failed to read stored files", e);
-        }
+        return Stream.empty();
     }
 
     @Override
     public Path load(String filename) {
-        return rootLocation.resolve(filename);
+        return null;
     }
-
 
     @Override
     public void deleteAll() {
-        FileSystemUtils.deleteRecursively(rootLocation.toFile());
-    }
 
+    }
 
     public void init() {
         try {
