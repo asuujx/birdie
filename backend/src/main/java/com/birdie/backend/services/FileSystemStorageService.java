@@ -126,6 +126,15 @@ public class FileSystemStorageService implements StorageService {
         solutionRepository.delete(solution);
     }
 
+    public Solution getSolutionForStudent(int courseMemberId, int taskId) {
+        return solutionRepository.findByCourseMemberIdAndTaskId(courseMemberId, taskId)
+                .orElseThrow(() -> new StorageException("Solution not found."));
+    }
+
+    public List<Solution> getSolutionForTeacher(int taskId) {
+        return solutionRepository.findAllByTaskId(taskId);
+    }
+
     @Override
     public Stream<Path> loadAll() {
         return Stream.empty();

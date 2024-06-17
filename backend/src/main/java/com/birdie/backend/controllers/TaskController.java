@@ -1,8 +1,12 @@
 package com.birdie.backend.controllers;
 
 import com.birdie.backend.dto.request.TaskUpdateRequest;
+import com.birdie.backend.handlers.StorageException;
+import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.models.Task;
 import com.birdie.backend.models.User;
+import com.birdie.backend.models.enummodels.Role;
+import com.birdie.backend.repositories.CourseMemberRepository;
 import com.birdie.backend.services.FileSystemStorageService;
 import com.birdie.backend.services.JwtService;
 import com.birdie.backend.services.TaskService;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -22,14 +27,16 @@ public class TaskController {
     private final FileSystemStorageService fileSystemStorageService;
     private final JwtService jwtService;
     private final UserService userService;
+    private final CourseMemberRepository courseMemberRepository;
 
 
     @Autowired
-    public TaskController(TaskService taskService, FileSystemStorageService fileSystemStorageService, JwtService jwtService, UserService userService) {
+    public TaskController(TaskService taskService, FileSystemStorageService fileSystemStorageService, JwtService jwtService, UserService userService, CourseMemberRepository courseMemberRepository) {
         this.taskService = taskService;
         this.fileSystemStorageService = fileSystemStorageService;
         this.jwtService = jwtService;
         this.userService = userService;
+        this.courseMemberRepository = courseMemberRepository;
     }
 
     @GetMapping("/{taskId}")
@@ -63,6 +70,30 @@ public class TaskController {
         User user = userService.getUserByEmail(userDetails.getUsername());
 
         return fileSystemStorageService.store(files, user.getId(), taskId);
+    }
+
+    @GetMapping("/{taskId}/solutions")
+    public Object getSolution(@RequestHeader("Authorization") String token, @PathVariable int taskId) {
+        String jwt = token.replace("Bearer ", "");
+        UserDetails userDetails;
+
+        try {
+            userDetails = jwtService.loadUserDetailsFromToken(jwt);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid token", e);
+        }
+
+        User user = userService.getUserByEmail(userDetails.getUsername());
+
+        if (user.getRole().equals(Role.ROLE_STUDENT)) {
+            CourseMember courseMember = courseMemberRepository.findByTaskAndUser(taskId, user.getId())
+                    .orElseThrow(() -> new StorageException("Course member not found."));
+            return fileSystemStorageService.getSolutionForStudent(courseMember.getId(), taskId);
+        } else if (user.getRole().equals(Role.ROLE_TEACHER)) {
+            return fileSystemStorageService.getSolutionForTeacher(taskId);
+        } else {
+            throw new RuntimeException("Access denied");
+        }
     }
 
     @DeleteMapping("/{taskId}/solutions/{solutionId}")
