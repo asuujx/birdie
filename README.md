@@ -44,10 +44,10 @@
    - [x] PATCH /tasks/{taskId}
    - [x] DELETE tasks/{taskId}
   
-   - [ ] GET tasks/{taskId}/solutions
-   - [ ] POST tasks/{taskId}/solutions
+   - [x] GET tasks/{taskId}/solutions
+   - [x] POST tasks/{taskId}/solutions
   
-   - [ ] DELETE /tasks/{taskId}/solutions/{solutionId}
+   - [x] DELETE /tasks/{taskId}/solutions/{solutionId}
    - [ ] PATCH /tasks/{taskId}/solutions/{solutionId}
   
    - [ ] GET /tasks/{taskId}/download
