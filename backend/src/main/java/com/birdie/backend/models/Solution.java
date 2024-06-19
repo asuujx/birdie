@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Builder
@@ -30,6 +29,15 @@ public class Solution {
     @Column(name = "date_added", nullable = false)
     private Date dateAdded;
 
-    //@OneToMany(mappedBy = "solution", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    //private List<File> files;
+    @Column(name = "date_updated")
+    private Date dateUpdated;
+
+    @Column(name = "grade")
+    private int grade;
+
+    @Column(name = "grade_description")
+    private String gradeDescription;
+
+    @Column(name = "date_graded")
+    private Date dateGraded;
 }

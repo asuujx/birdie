@@ -1,8 +1,10 @@
 package com.birdie.backend.controllers;
 
+import com.birdie.backend.dto.request.GradeRequest;
 import com.birdie.backend.dto.request.TaskUpdateRequest;
 import com.birdie.backend.handlers.StorageException;
 import com.birdie.backend.models.CourseMember;
+import com.birdie.backend.models.Solution;
 import com.birdie.backend.models.Task;
 import com.birdie.backend.models.User;
 import com.birdie.backend.models.enummodels.Role;
@@ -94,6 +96,12 @@ public class TaskController {
         } else {
             throw new RuntimeException("Access denied");
         }
+    }
+
+    @PutMapping("/{taskId}/solutions/{solutionId}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public void gradeSolution(@PathVariable int taskId, @PathVariable int solutionId, @RequestBody GradeRequest gradeRequest) {
+        fileSystemStorageService.gradeSolution(taskId, solutionId, gradeRequest.getGrade(), gradeRequest.getGradeDescription());
     }
 
     @DeleteMapping("/{taskId}/solutions/{solutionId}")

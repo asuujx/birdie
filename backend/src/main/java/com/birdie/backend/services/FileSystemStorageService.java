@@ -5,8 +5,10 @@ import com.birdie.backend.handlers.StorageException;
 import com.birdie.backend.models.*;
 import com.birdie.backend.repositories.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -133,6 +135,17 @@ public class FileSystemStorageService implements StorageService {
 
     public List<Solution> getSolutionForTeacher(int taskId) {
         return solutionRepository.findAllByTaskId(taskId);
+    }
+
+    public void gradeSolution(int taskId, int solutionId, int grade, String gradeDescription) {
+        Solution solution = solutionRepository.findByIdAndTaskId(solutionId, taskId)
+                .orElseThrow(() -> new RuntimeException("Solution not found for this id :: " + solutionId));
+
+        solution.setGrade(grade);
+        solution.setGradeDescription(gradeDescription);
+        solution.setDateGraded(new Date());
+
+        solutionRepository.save(solution);
     }
 
     @Override
