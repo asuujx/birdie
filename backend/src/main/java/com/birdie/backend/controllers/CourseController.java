@@ -1,9 +1,9 @@
 package com.birdie.backend.controllers;
 
-import com.birdie.backend.dto.request.ApproveMemberRequest;
 import com.birdie.backend.dto.response.CourseMemberDetailsResponse;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
+import com.birdie.backend.models.Group;
 import com.birdie.backend.models.Task;
 import com.birdie.backend.services.*;
 
@@ -21,12 +21,14 @@ public class CourseController {
     private final CourseService courseService;
     private final CourseMemberService courseMemberService;
     private final TaskService taskService;
+    private final GroupService groupService;
 
     @Autowired
-    public CourseController(CourseService courseService, CourseMemberService courseMemberService, TaskService taskService) {
+    public CourseController(CourseService courseService, CourseMemberService courseMemberService, TaskService taskService, GroupService groupService) {
         this.courseService = courseService;
         this.courseMemberService = courseMemberService;
         this.taskService = taskService;
+        this.groupService = groupService;
     }
 
     @GetMapping
@@ -62,21 +64,36 @@ public class CourseController {
         return courseMemberService.addUserToCourse(token, courseId);
     }
 
-    @PostMapping("/{courseId}/approve")
-    @PreAuthorize("hasRole('TEACHER')")
-    public CourseMember approveMember(@RequestBody ApproveMemberRequest approveMemberRequest) {
-        return courseMemberService.approveMember(approveMemberRequest);
-    }
-
     @GetMapping("/{courseId}/members")
     public List<CourseMemberDetailsResponse> getCourseMembers(@PathVariable int courseId) {
         return courseMemberService.getCourseMembers(courseId);
+    }
+
+    @PatchMapping("/{courseId}/members/{memberId}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public CourseMember editCourseMember(@PathVariable int courseId, @PathVariable int memberId, @RequestBody Map<String, Object> fields) {
+        return courseMemberService.editCourseMember(courseId, memberId, fields);
     }
 
     @DeleteMapping("/{courseId}/members/{memberId}")
     @PreAuthorize("hasRole('TEACHER')")
     public void deleteCourseMember(@PathVariable int courseId, @PathVariable int memberId) {
         courseMemberService.deleteCourseMember(courseId, memberId);
+    }
+
+    @GetMapping("/{courseId}/groups")
+    public List<Group> getCourseGroups(@PathVariable int courseId) {
+        return groupService.getAllGroups(courseId);
+    }
+
+    @PostMapping("/{courseId}/groups")
+    public Group addCourseGroup(@PathVariable int courseId, @RequestBody String name) {
+        return groupService.addCourseGroup(courseId, name);
+    }
+
+    @DeleteMapping("/{courseId}/groups/{groupId}")
+    public void deleteCourseGroup(@PathVariable int courseId, @PathVariable int groupId) {
+        groupService.deleteGroup(courseId, groupId);
     }
 
     @GetMapping("/{courseId}/tasks")
