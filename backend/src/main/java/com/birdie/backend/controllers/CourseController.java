@@ -1,5 +1,6 @@
 package com.birdie.backend.controllers;
 
+import com.birdie.backend.dto.request.AddGroupRequest;
 import com.birdie.backend.dto.response.CourseMemberDetailsResponse;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
@@ -87,8 +88,8 @@ public class CourseController {
     }
 
     @PostMapping("/{courseId}/groups")
-    public Group addCourseGroup(@PathVariable int courseId, @RequestBody String name) {
-        return groupService.addCourseGroup(courseId, name);
+    public Group addCourseGroup(@PathVariable int courseId, @RequestBody AddGroupRequest request) {
+        return groupService.addCourseGroup(courseId, request.getName());
     }
 
     @DeleteMapping("/{courseId}/groups/{groupId}")
