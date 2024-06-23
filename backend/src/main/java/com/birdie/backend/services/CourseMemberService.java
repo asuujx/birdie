@@ -1,6 +1,9 @@
 package com.birdie.backend.services;
 
+import com.birdie.backend.config.MessageProvider;
 import com.birdie.backend.dto.response.CourseMemberDetailsResponse;
+import com.birdie.backend.exceptions.EntityAlreadyExistException;
+import com.birdie.backend.exceptions.EntityDoesNotExistException;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.models.Group;
@@ -43,14 +46,14 @@ public class CourseMemberService {
         try {
             userDetails = jwtService.loadUserDetailsFromToken(jwt);
         } catch ( Exception e) {
-            throw new RuntimeException("Invalid token", e);
+            throw new IllegalArgumentException(MessageProvider.TOKEN_INVALID);
         }
 
         User user = userService.getUserByEmail(userDetails.getUsername());
         Optional<CourseMember> existingCourseMember = courseMemberRepository.findByUserAndCourse(user, course);
 
         if (existingCourseMember.isPresent()) {
-            throw new RuntimeException("User is already a member of this course");
+            throw new EntityAlreadyExistException(MessageProvider.COURSE_MEMBER_EXIST);
         }
 
         CourseMember courseMember = CourseMember
@@ -65,7 +68,7 @@ public class CourseMemberService {
 
     public CourseMember editCourseMember(int courseId, int memberId, Map<String, Object> fields) {
         CourseMember courseMember = courseMemberRepository.findByIdAndCourseId(memberId, courseId)
-                .orElseThrow(() -> new RuntimeException("Course Member Not Found"));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_MEMBER_NOT_FOUND));
 
         if (fields.containsKey("status")) {
             courseMember.setStatus(Status.ACTIVE);
@@ -74,7 +77,8 @@ public class CourseMemberService {
         if (fields.containsKey("groupId")) {
             int groupId = Integer.parseInt(fields.get("groupId").toString());
             Group group = groupRepository.findByIdAndCourseId(groupId, courseId)
-                    .orElseThrow(() -> new RuntimeException("Group Not Found"));
+                    .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.GROUP_NOT_FOUND));
+
             courseMember.setGroup(group);
         }
 
@@ -83,10 +87,10 @@ public class CourseMemberService {
 
     public void deleteCourseMember(int courseId, int memberId) {
         CourseMember courseMember = courseMemberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("CourseMember not found with id" + memberId));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_MEMBER_NOT_FOUND));
 
         if (courseMember.getCourse().getId() != courseId) {
-            throw new RuntimeException("CourseMember does not belong to the specified course");
+            throw new EntityDoesNotExistException(MessageProvider.COURSE_MEMBER_NOT_FOUND);
         }
 
         courseMemberRepository.delete(courseMember);
@@ -94,7 +98,7 @@ public class CourseMemberService {
 
     public List<CourseMemberDetailsResponse> getCourseMembers(int courseId) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id " + courseId));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_NOT_FOUND));
 
         List<CourseMember> courseMembers = courseMemberRepository.findByCourse(course);
 

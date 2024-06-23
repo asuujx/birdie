@@ -1,5 +1,6 @@
 package com.birdie.backend.services;
 
+import com.birdie.backend.config.MessageProvider;
 import com.birdie.backend.dto.response.JwtAuthenticationResponse;
 import com.birdie.backend.dto.request.LoginRequest;
 import com.birdie.backend.dto.request.RefreshTokenRequest;
@@ -50,7 +51,7 @@ public class AuthenticationService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
+                .orElseThrow(() -> new IllegalArgumentException(MessageProvider.EMAIL_OR_PASSWORD_INVALID));
         var jwt = jwtService.generateToken(user);
         var refreshJwt = jwtService.generateRefreshToken(user);
 
@@ -61,13 +62,13 @@ public class AuthenticationService {
         String refreshToken = refreshTokenRequest.getRefreshToken();
         String userName = jwtService.extractUserName(refreshToken);
         var user = userRepository.findByEmail(userName)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token."));
+                .orElseThrow(() -> new IllegalArgumentException(MessageProvider.REFRESH_TOKEN_INVALID));
 
         if (jwtService.isRefreshTokenValid(refreshToken, user)) {
             var jwt = jwtService.generateToken(user);
             return JwtAuthenticationResponse.builder().token(jwt).refreshToken(refreshToken).build();
         } else {
-            throw new RuntimeException("Invalid refresh token");
+            throw new IllegalArgumentException(MessageProvider.REFRESH_TOKEN_INVALID);
         }
     }
 }

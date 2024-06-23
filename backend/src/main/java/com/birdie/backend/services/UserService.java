@@ -1,5 +1,7 @@
 package com.birdie.backend.services;
 
+import com.birdie.backend.config.MessageProvider;
+import com.birdie.backend.exceptions.EntityDoesNotExistException;
 import com.birdie.backend.models.User;
 import com.birdie.backend.repositories.UserRepository;
 
@@ -19,16 +21,17 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.USER_NOT_FOUND));
     }
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.USER_NOT_FOUND));
     }
 
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Username not found."));
+        return username -> userRepository.findByEmail(username)
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.USER_NOT_FOUND));
     }
 
     public User save(User newUser) {

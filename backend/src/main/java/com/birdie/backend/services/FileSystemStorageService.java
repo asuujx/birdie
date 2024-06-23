@@ -1,7 +1,9 @@
 package com.birdie.backend.services;
 
+import com.birdie.backend.config.MessageProvider;
 import com.birdie.backend.config.StorageConfig;
-import com.birdie.backend.handlers.StorageException;
+import com.birdie.backend.exceptions.EntityDoesNotExistException;
+import com.birdie.backend.exceptions.StorageException;
 import com.birdie.backend.models.*;
 import com.birdie.backend.repositories.*;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +34,7 @@ public class FileSystemStorageService implements StorageService {
     public FileSystemStorageService(StorageConfig properties, SolutionRepository solutionRepository, CourseMemberRepository courseMemberRepository, TaskRepository taskRepository, FileRepository fileRepository) {
 
         if(properties.getLocation().trim().isEmpty()){
-            throw new StorageException("File upload location can not be Empty.");
+            throw new IllegalArgumentException(MessageProvider.LOCATION_NULL);
         }
 
         this.rootLocation = Paths.get(properties.getLocation());
@@ -45,13 +47,15 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public Map<String, Object> store(MultipartFile[] files, int userId, int taskId) {
         if (files.length == 0) {
-            throw new StorageException("Failed to store empty file.");
+            throw new IllegalArgumentException(MessageProvider.FILE_NULL);
         }
 
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new StorageException("Task not found."));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.TASK_NOT_FOUND));
+
         CourseMember courseMember = courseMemberRepository.findByTaskAndUser(taskId, userId)
-                .orElseThrow(() -> new StorageException("Course member not found."));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_MEMBER_NOT_FOUND));
+
         Date date = new Date();
 
         Solution solution = Solution
@@ -73,8 +77,7 @@ public class FileSystemStorageService implements StorageService {
                     .normalize().toAbsolutePath();
 
             if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
-                throw new StorageException(
-                        "Cannot store file outside current directory.");
+                throw new IllegalArgumentException(MessageProvider.FILE_OUTSIDE);
             }
 
             try (InputStream inputStream = file.getInputStream()) {
@@ -104,7 +107,7 @@ public class FileSystemStorageService implements StorageService {
 
     public void deleteSolution(int taskId, int solutionId) {
         Solution solution = solutionRepository.findByIdAndTaskId(solutionId, taskId)
-                .orElseThrow(() -> new StorageException("Solution not found."));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.SOLUTION_NOT_FOUND));
 
         // Delete the files from the filesystem
         List<File> files = fileRepository.findBySolution(solution);
@@ -128,7 +131,7 @@ public class FileSystemStorageService implements StorageService {
 
     public Solution getSolutionForStudent(int courseMemberId, int taskId) {
         return solutionRepository.findByCourseMemberIdAndTaskId(courseMemberId, taskId)
-                .orElseThrow(() -> new StorageException("Solution not found."));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.SOLUTION_NOT_FOUND));
     }
 
     public List<Solution> getSolutionForTeacher(int taskId) {
@@ -137,7 +140,7 @@ public class FileSystemStorageService implements StorageService {
 
     public void gradeSolution(int taskId, int solutionId, int grade, String gradeDescription) {
         Solution solution = solutionRepository.findByIdAndTaskId(solutionId, taskId)
-                .orElseThrow(() -> new RuntimeException("Solution not found for this id :: " + solutionId));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.SOLUTION_NOT_FOUND));
 
         solution.setGrade(grade);
         solution.setGradeDescription(gradeDescription);

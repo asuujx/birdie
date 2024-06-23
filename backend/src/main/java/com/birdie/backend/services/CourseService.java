@@ -1,5 +1,7 @@
 package com.birdie.backend.services;
 
+import com.birdie.backend.config.MessageProvider;
+import com.birdie.backend.exceptions.EntityDoesNotExistException;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.models.User;
@@ -45,7 +47,7 @@ public class CourseService {
         try {
             userDetails = jwtService.loadUserDetailsFromToken(jwt);
         } catch (Exception e) {
-            throw new RuntimeException("Invalid token ", e);
+            throw new IllegalArgumentException(MessageProvider.TOKEN_INVALID);
         }
 
         User user = userService.getUserByEmail(userDetails.getUsername());
@@ -63,12 +65,12 @@ public class CourseService {
 
     public Course getCourseById(int courseId) {
         return courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id " + courseId));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_NOT_FOUND));
     }
 
     public Course updateCourse(int courseId, Map<String, Object> fields) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id " + courseId));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_NOT_FOUND));
 
         fields.forEach((key, value) -> {
             if (key.equals("name")) {

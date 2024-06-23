@@ -1,10 +1,11 @@
 package com.birdie.backend.controllers;
 
+import com.birdie.backend.config.MessageProvider;
 import com.birdie.backend.dto.request.GradeRequest;
 import com.birdie.backend.dto.request.TaskUpdateRequest;
-import com.birdie.backend.handlers.StorageException;
+import com.birdie.backend.exceptions.StorageException;
+import com.birdie.backend.exceptions.UnauthorizedException;
 import com.birdie.backend.models.CourseMember;
-import com.birdie.backend.models.Solution;
 import com.birdie.backend.models.Task;
 import com.birdie.backend.models.User;
 import com.birdie.backend.models.enummodels.Role;
@@ -13,6 +14,7 @@ import com.birdie.backend.services.FileSystemStorageService;
 import com.birdie.backend.services.JwtService;
 import com.birdie.backend.services.TaskService;
 import com.birdie.backend.services.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -66,7 +67,7 @@ public class TaskController {
         try {
             userDetails = jwtService.loadUserDetailsFromToken(jwt);
         } catch (Exception e) {
-            throw new RuntimeException("Invalid token", e);
+            throw new IllegalArgumentException(MessageProvider.TOKEN_INVALID);
         }
 
         User user = userService.getUserByEmail(userDetails.getUsername());
@@ -82,19 +83,19 @@ public class TaskController {
         try {
             userDetails = jwtService.loadUserDetailsFromToken(jwt);
         } catch (Exception e) {
-            throw new RuntimeException("Invalid token", e);
+            throw new IllegalArgumentException(MessageProvider.TOKEN_INVALID);
         }
 
         User user = userService.getUserByEmail(userDetails.getUsername());
 
         if (user.getRole().equals(Role.ROLE_STUDENT)) {
             CourseMember courseMember = courseMemberRepository.findByTaskAndUser(taskId, user.getId())
-                    .orElseThrow(() -> new StorageException("Course member not found."));
+                    .orElseThrow(() -> new EntityNotFoundException(MessageProvider.COURSE_MEMBER_NOT_FOUND));
             return fileSystemStorageService.getSolutionForStudent(courseMember.getId(), taskId);
         } else if (user.getRole().equals(Role.ROLE_TEACHER)) {
             return fileSystemStorageService.getSolutionForTeacher(taskId);
         } else {
-            throw new RuntimeException("Access denied");
+            throw new UnauthorizedException(MessageProvider.UNAUTHORIZED);
         }
     }
 

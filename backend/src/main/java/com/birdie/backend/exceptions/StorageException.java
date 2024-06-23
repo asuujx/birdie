@@ -1,4 +1,4 @@
-package com.birdie.backend.handlers;
+package com.birdie.backend.exceptions;
 
 public class StorageException extends RuntimeException {
     public StorageException(String message) {

@@ -1,5 +1,7 @@
 package com.birdie.backend.services;
 
+import com.birdie.backend.config.MessageProvider;
+import com.birdie.backend.exceptions.EntityDoesNotExistException;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.models.Group;
@@ -28,7 +30,8 @@ public class GroupService {
 
     public Group addCourseGroup(int courseId, String name) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_NOT_FOUND));
+
         Group group = Group.builder()
                 .course(course)
                 .name(name)

@@ -1,6 +1,8 @@
 package com.birdie.backend.services;
 
+import com.birdie.backend.config.MessageProvider;
 import com.birdie.backend.dto.request.TaskUpdateRequest;
+import com.birdie.backend.exceptions.EntityDoesNotExistException;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.Task;
 import com.birdie.backend.repositories.CourseRepository;
@@ -21,14 +23,14 @@ public class TaskService {
 
     public List<Task> getAllTasksByCourse(int id) {
         Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found with id" + id));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_NOT_FOUND));
 
         return taskRepository.findByCourse(course);
     }
 
     public Task createTask(int courseId, Task task) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_NOT_FOUND));
 
         task.setCourse(course);
 
@@ -37,7 +39,7 @@ public class TaskService {
 
     public Task getTaskById(int id) {
         return taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found with id" + id));
+                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.TASK_NOT_FOUND));
     }
 
     public Task updateTask(int id, TaskUpdateRequest taskUpdateRequest) {
