@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -33,11 +34,14 @@ public class Solution {
     private Date dateUpdated;
 
     @Column(name = "grade")
-    private int grade;
+    private Integer grade;
 
     @Column(name = "grade_description")
     private String gradeDescription;
 
     @Column(name = "date_graded")
     private Date dateGraded;
+
+    @OneToMany(mappedBy = "solution", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<File> files;
 }

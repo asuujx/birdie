@@ -1,5 +1,6 @@
 package com.birdie.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class File {
     private Date date_added;
 
     @ManyToOne
+    @JsonIgnoreProperties("files")
     @JoinColumn(name = "solution_id", nullable = false)
     private Solution solution;
 }
