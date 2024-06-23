@@ -1,6 +1,5 @@
 package com.birdie.backend.services;
 
-import com.birdie.backend.config.MessageProvider;
 import com.birdie.backend.exceptions.EntityDoesNotExistException;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
@@ -12,13 +11,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.birdie.backend.config.MessageProvider.COURSE_NOT_FOUND;
+
 @Service
 public class GroupService {
     private final GroupRepository groupRepository;
     private final CourseRepository courseRepository;
     private final CourseMemberRepository courseMemberRepository;
 
-    public GroupService(GroupRepository groupRepository, CourseRepository courseRepository, CourseMemberRepository courseMemberRepository) {
+    public GroupService(GroupRepository groupRepository,
+                        CourseRepository courseRepository,
+                        CourseMemberRepository courseMemberRepository) {
         this.groupRepository = groupRepository;
         this.courseRepository = courseRepository;
         this.courseMemberRepository = courseMemberRepository;
@@ -28,16 +31,16 @@ public class GroupService {
         return groupRepository.findAllByCourseId(courseId);
     }
 
-    public Group addCourseGroup(int courseId, String name) {
+    public void createCourseGroup(int courseId, String name) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_NOT_FOUND));
+                .orElseThrow(() -> new EntityDoesNotExistException(COURSE_NOT_FOUND));
 
         Group group = Group.builder()
                 .course(course)
                 .name(name)
                 .build();
 
-        return groupRepository.save(group);
+        groupRepository.save(group);
     }
 
     public void deleteGroup(int courseId, int groupId) {

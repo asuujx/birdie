@@ -16,7 +16,8 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final CourseRepository courseRepository;
 
-    public TaskService(TaskRepository taskRepository, CourseRepository courseRepository) {
+    public TaskService(TaskRepository taskRepository,
+                       CourseRepository courseRepository) {
         this.taskRepository = taskRepository;
         this.courseRepository = courseRepository;
     }
@@ -28,13 +29,13 @@ public class TaskService {
         return taskRepository.findByCourse(course);
     }
 
-    public Task createTask(int courseId, Task task) {
+    public void createTask(int courseId, Task task) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_NOT_FOUND));
 
         task.setCourse(course);
 
-        return taskRepository.save(task);
+        taskRepository.save(task);
     }
 
     public Task getTaskById(int id) {
@@ -42,7 +43,7 @@ public class TaskService {
                 .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.TASK_NOT_FOUND));
     }
 
-    public Task updateTask(int id, TaskUpdateRequest taskUpdateRequest) {
+    public void updateTask(int id, TaskUpdateRequest taskUpdateRequest) {
         Task existingTask = getTaskById(id);
 
         if (taskUpdateRequest.getName() != null) {
@@ -55,7 +56,7 @@ public class TaskService {
             existingTask.setDueDate(taskUpdateRequest.getDueDate());
         }
 
-        return taskRepository.save(existingTask);
+        taskRepository.save(existingTask);
     }
 
     public void deleteTask(int id) {

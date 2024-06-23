@@ -18,4 +18,29 @@ public class MessageProvider {
     public static final String LOCATION_NULL = "Location cannot be null";
     public static final String FILE_NULL = "File cannot be null";
     public static final String FILE_OUTSIDE = "File cannot be outside current directory";
+
+    // Course
+    public static final String COURSE_CREATED = "Course created";
+    public static final String COURSE_UPDATED = "Course updated";
+    public static final String COURSE_DELETED = "Course deleted";
+
+    // Course Member
+    public static final String COURSE_MEMBER_CREATED = "Course member created";
+    public static final String COURSE_MEMBER_UPDATED = "Course member updated";
+    public static final String COURSE_MEMBER_DELETED = "Course member deleted";
+
+    // Group
+    public static final String COURSE_GROUP_CREATED = "Course group created";
+    public static final String COURSE_GROUP_UPDATED = "Course group updated";
+    public static final String COURSE_GROUP_DELETED = "Course group deleted";
+
+    // Task
+    public static final String TASK_CREATED = "Task created";
+    public static final String TASK_UPDATED = "Task updated";
+    public static final String TASK_DELETED = "Task deleted";
+
+    // Solution
+    public static final String SOLUTION_CREATED = "Solution created";
+    public static final String SOLUTION_UPDATED = "Solution updated";
+    public static final String SOLUTION_DELETED = "Solution deleted";
 }

@@ -1,6 +1,5 @@
 package com.birdie.backend.services;
 
-import com.birdie.backend.config.MessageProvider;
 import com.birdie.backend.config.StorageConfig;
 import com.birdie.backend.exceptions.EntityDoesNotExistException;
 import com.birdie.backend.exceptions.StorageException;
@@ -20,6 +19,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static com.birdie.backend.config.MessageProvider.*;
+
 @Service
 @Slf4j
 public class FileSystemStorageService implements StorageService {
@@ -31,10 +32,14 @@ public class FileSystemStorageService implements StorageService {
     private final FileRepository fileRepository;
 
     @Autowired
-    public FileSystemStorageService(StorageConfig properties, SolutionRepository solutionRepository, CourseMemberRepository courseMemberRepository, TaskRepository taskRepository, FileRepository fileRepository) {
+    public FileSystemStorageService(StorageConfig properties,
+                                    SolutionRepository solutionRepository,
+                                    CourseMemberRepository courseMemberRepository,
+                                    TaskRepository taskRepository,
+                                    FileRepository fileRepository) {
 
         if(properties.getLocation().trim().isEmpty()){
-            throw new IllegalArgumentException(MessageProvider.LOCATION_NULL);
+            throw new IllegalArgumentException(LOCATION_NULL);
         }
 
         this.rootLocation = Paths.get(properties.getLocation());
@@ -47,14 +52,14 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public Map<String, Object> store(MultipartFile[] files, int userId, int taskId) {
         if (files.length == 0) {
-            throw new IllegalArgumentException(MessageProvider.FILE_NULL);
+            throw new IllegalArgumentException(FILE_NULL);
         }
 
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.TASK_NOT_FOUND));
+                .orElseThrow(() -> new EntityDoesNotExistException(TASK_NOT_FOUND));
 
         CourseMember courseMember = courseMemberRepository.findByTaskAndUser(taskId, userId)
-                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new EntityDoesNotExistException(COURSE_MEMBER_NOT_FOUND));
 
         Date date = new Date();
 
@@ -66,9 +71,9 @@ public class FileSystemStorageService implements StorageService {
                 .build();
 
         Solution dbSolution = solutionRepository.save(solution);
-        solutionRepository.flush();
 
         List<File> savedFiles = new ArrayList<>();
+
         Arrays.asList(files).forEach(file -> {
             String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
             String randomFilename = UUID.randomUUID() + "-" + originalFilename;
@@ -77,7 +82,7 @@ public class FileSystemStorageService implements StorageService {
                     .normalize().toAbsolutePath();
 
             if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
-                throw new IllegalArgumentException(MessageProvider.FILE_OUTSIDE);
+                throw new IllegalArgumentException(FILE_OUTSIDE);
             }
 
             try (InputStream inputStream = file.getInputStream()) {
@@ -107,7 +112,7 @@ public class FileSystemStorageService implements StorageService {
 
     public void deleteSolution(int taskId, int solutionId) {
         Solution solution = solutionRepository.findByIdAndTaskId(solutionId, taskId)
-                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.SOLUTION_NOT_FOUND));
+                .orElseThrow(() -> new EntityDoesNotExistException(SOLUTION_NOT_FOUND));
 
         // Delete the files from the filesystem
         List<File> files = fileRepository.findBySolution(solution);
@@ -131,7 +136,7 @@ public class FileSystemStorageService implements StorageService {
 
     public Solution getSolutionForStudent(int courseMemberId, int taskId) {
         return solutionRepository.findByCourseMemberIdAndTaskId(courseMemberId, taskId)
-                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.SOLUTION_NOT_FOUND));
+                .orElseThrow(() -> new EntityDoesNotExistException(SOLUTION_NOT_FOUND));
     }
 
     public List<Solution> getSolutionForTeacher(int taskId) {
@@ -140,7 +145,7 @@ public class FileSystemStorageService implements StorageService {
 
     public void gradeSolution(int taskId, int solutionId, int grade, String gradeDescription) {
         Solution solution = solutionRepository.findByIdAndTaskId(solutionId, taskId)
-                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.SOLUTION_NOT_FOUND));
+                .orElseThrow(() -> new EntityDoesNotExistException(SOLUTION_NOT_FOUND));
 
         solution.setGrade(grade);
         solution.setGradeDescription(gradeDescription);

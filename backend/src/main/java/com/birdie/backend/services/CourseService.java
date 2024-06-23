@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.birdie.backend.config.MessageProvider.COURSE_NOT_FOUND;
+
 @Service
 public class CourseService {
     private final CourseRepository courseRepository;
@@ -39,7 +41,12 @@ public class CourseService {
         return courseRepository.findAll(sortOrder);
     }
 
-    public Course createCourse(String token, Course course) {
+    public Course getCourse(int courseId) {
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> new EntityDoesNotExistException(COURSE_NOT_FOUND));
+    }
+
+    public void createCourse(String token, Course course) {
         String jwt = token.replace("Bearer ", "");
         Course createdCourse = courseRepository.save(course);
         UserDetails userDetails;
@@ -59,18 +66,11 @@ public class CourseService {
                 .build();
 
         courseMemberRepository.save(courseMember);
-
-        return createdCourse;
     }
 
-    public Course getCourseById(int courseId) {
-        return courseRepository.findById(courseId)
-                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_NOT_FOUND));
-    }
-
-    public Course updateCourse(int courseId, Map<String, Object> fields) {
+    public void updateCourse(int courseId, Map<String, Object> fields) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new EntityDoesNotExistException(MessageProvider.COURSE_NOT_FOUND));
+                .orElseThrow(() -> new EntityDoesNotExistException(COURSE_NOT_FOUND));
 
         fields.forEach((key, value) -> {
             if (key.equals("name")) {
@@ -78,10 +78,13 @@ public class CourseService {
             }
         });
 
-        return courseRepository.save(course);
+        courseRepository.save(course);
     }
     
     public void deleteCourse(int courseId) {
-        courseRepository.deleteById(courseId);
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new EntityDoesNotExistException(COURSE_NOT_FOUND));
+
+        courseRepository.delete(course);
     }
 }
