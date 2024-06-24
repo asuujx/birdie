@@ -119,7 +119,8 @@ public class CourseMemberService {
         response.setId(courseMember.getId());
         response.setName(courseMember.getUser().getName());
         response.setSurname(courseMember.getUser().getSurname());
-        response.setGroup(courseMember.getGroup() != null ? courseMember.getGroup().getId() : null);
+        response.setGroupId(courseMember.getGroup() != null ? courseMember.getGroup().getId() : null);
+        response.setGroupName(courseMember.getGroup() != null ? courseMember.getGroup().getName() : null);
 
         return response;
     }

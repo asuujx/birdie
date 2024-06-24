@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.birdie.backend.config.MessageProvider.COURSE_NOT_FOUND;
+import static com.birdie.backend.config.MessageProvider.GROUP_NOT_FOUND;
 
 @Service
 public class GroupService {
