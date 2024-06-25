@@ -2,6 +2,7 @@ package com.birdie.backend.services;
 
 import com.birdie.backend.config.MessageProvider;
 import com.birdie.backend.exceptions.EntityDoesNotExistException;
+import com.birdie.backend.exceptions.UnauthorizedException;
 import com.birdie.backend.models.Course;
 import com.birdie.backend.models.CourseMember;
 import com.birdie.backend.models.User;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.birdie.backend.config.MessageProvider.COURSE_NOT_FOUND;
+import static com.birdie.backend.config.MessageProvider.*;
 
 @Service
 public class CourseService {
@@ -41,9 +42,28 @@ public class CourseService {
         return courseRepository.findAll(sortOrder);
     }
 
-    public Course getCourse(int courseId) {
-        return courseRepository.findById(courseId)
+    public Course getCourse(String token, int courseId) {
+        String jwt = token.replace("Bearer ", "");
+        UserDetails userDetails;
+
+        try {
+            userDetails = jwtService.loadUserDetailsFromToken(jwt);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(TOKEN_INVALID);
+        }
+
+        User user = userService.getUserByEmail(userDetails.getUsername());
+        Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new EntityDoesNotExistException(COURSE_NOT_FOUND));
+       Optional<CourseMember> courseMember = courseMemberRepository.findByUserAndCourse(user, course);
+
+
+        if (courseMember.isPresent()) {
+            return courseRepository.findById(courseId)
+                    .orElseThrow(() -> new EntityDoesNotExistException(COURSE_NOT_FOUND));
+        } else {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
     }
 
     public void createCourse(String token, Course course) {
