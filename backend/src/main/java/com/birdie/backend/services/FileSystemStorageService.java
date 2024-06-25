@@ -80,7 +80,7 @@ public class FileSystemStorageService implements StorageService {
             String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
             String randomFilename = UUID.randomUUID() + "-" + originalFilename;
             Path destinationFile = this.rootLocation.resolve(
-                            Paths.get(Objects.requireNonNull(file.getOriginalFilename())))
+                            Paths.get(Objects.requireNonNull(randomFilename)))
                     .normalize().toAbsolutePath();
 
             if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
@@ -94,6 +94,7 @@ public class FileSystemStorageService implements StorageService {
                 File dbFile = new File();
                 dbFile.setUrl(homeURL + "/cdn/" + randomFilename);
                 dbFile.setOriginal_name(originalFilename);
+                dbFile.setDbFilename(randomFilename);
                 dbFile.setDate_added(date);
                 dbFile.setSolution(dbSolution);
 
@@ -121,7 +122,7 @@ public class FileSystemStorageService implements StorageService {
         for (File file : files) {
             try {
                 Path filePath = this.rootLocation.resolve(
-                                Paths.get(Objects.requireNonNull(file.getOriginal_name())))
+                                Paths.get(Objects.requireNonNull(file.getDbFilename())))
                         .normalize().toAbsolutePath();
                 Files.deleteIfExists(filePath);
             } catch (IOException e) {

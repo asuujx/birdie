@@ -21,6 +21,9 @@ public class File {
     @Column(name = "url", nullable = false)
     private String url;
 
+    @Column(name = "db_filename", nullable = false)
+    private String dbFilename;
+
     @Column(name = "original_name")
     private String original_name;
 

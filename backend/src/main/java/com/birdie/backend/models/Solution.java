@@ -30,9 +30,6 @@ public class Solution {
     @Column(name = "date_added", nullable = false)
     private Date dateAdded;
 
-    @Column(name = "date_updated")
-    private Date dateUpdated;
-
     @Column(name = "grade")
     private Integer grade;
 
