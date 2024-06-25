@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,6 +76,7 @@ public class FileSystemStorageService implements StorageService {
         List<File> savedFiles = new ArrayList<>();
 
         Arrays.asList(files).forEach(file -> {
+            String homeURL = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
             String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
             String randomFilename = UUID.randomUUID() + "-" + originalFilename;
             Path destinationFile = this.rootLocation.resolve(
@@ -90,7 +92,7 @@ public class FileSystemStorageService implements StorageService {
                         StandardCopyOption.REPLACE_EXISTING);
 
                 File dbFile = new File();
-                dbFile.setUrl("http://localhost:8080/cdn/" + randomFilename);
+                dbFile.setUrl(homeURL + "/cdn/" + randomFilename);
                 dbFile.setOriginal_name(originalFilename);
                 dbFile.setDate_added(date);
                 dbFile.setSolution(dbSolution);
