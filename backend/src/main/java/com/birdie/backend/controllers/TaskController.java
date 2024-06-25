@@ -109,7 +109,11 @@ public class TaskController {
             CourseMember courseMember = courseMemberRepository.findByTaskAndUser(taskId, user.getId())
                     .orElseThrow(() -> new EntityNotFoundException(COURSE_MEMBER_NOT_FOUND));
 
-            return fileSystemStorageService.getSolutionForStudent(courseMember.getId(), taskId);
+            if (courseMember.getGroup() != null) {
+                return fileSystemStorageService.getSolutionForGroup(courseMember.getGroup().getId(), taskId);
+            } else {
+                return fileSystemStorageService.getSolutionForStudent(courseMember.getId(), taskId);
+            }
         } else if (user.getRole().equals(Role.ROLE_TEACHER)) {
             return fileSystemStorageService.getSolutionForTeacher(taskId);
         } else {

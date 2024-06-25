@@ -11,13 +11,12 @@ import com.birdie.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.birdie.backend.config.MessageProvider.*;
 
 @RestController
 @RequestMapping("/api/account")
@@ -42,14 +41,14 @@ public class UserController {
         try {
             userDetails = jwtService.loadUserDetailsFromToken(jwt);
         } catch (Exception e) {
-            throw new RuntimeException("Invalid token", e);
+            throw new IllegalArgumentException(TOKEN_INVALID);
         }
 
         if (jwtService.isTokenValid(jwt, userDetails)) {
             User user = userService.getUserByEmail(userDetails.getUsername());
             return new UserDetailsResponse(user.getId(), user.getEmail(), user.getName(), user.getSurname(), user.getRole());
         } else {
-            throw new RuntimeException("Invalid or expired token");
+            throw new IllegalArgumentException(TOKEN_INVALID);
         }
     }
 
@@ -62,7 +61,7 @@ public class UserController {
         try {
             userDetails = jwtService.loadUserDetailsFromToken(jwt);
         } catch (Exception e) {
-            throw new RuntimeException("Invalid token", e);
+            throw new IllegalArgumentException(TOKEN_INVALID);
         }
 
         User user = userService.getUserByEmail(userDetails.getUsername());

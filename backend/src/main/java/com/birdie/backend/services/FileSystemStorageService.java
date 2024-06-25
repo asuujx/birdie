@@ -139,6 +139,11 @@ public class FileSystemStorageService implements StorageService {
                 .orElseThrow(() -> new EntityDoesNotExistException(SOLUTION_NOT_FOUND));
     }
 
+    public Solution getSolutionForGroup(int groupId, int taskId) {
+        return solutionRepository.findByGroupIdAndTaskId(groupId, taskId)
+                .orElseThrow(() -> new EntityDoesNotExistException(SOLUTION_NOT_FOUND));
+    }
+
     public List<Solution> getSolutionForTeacher(int taskId) {
         return solutionRepository.findAllByTaskId(taskId);
     }
