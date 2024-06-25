@@ -90,7 +90,7 @@ public class FileSystemStorageService implements StorageService {
                         StandardCopyOption.REPLACE_EXISTING);
 
                 File dbFile = new File();
-                dbFile.setUrl("http://localhost:8080/" + randomFilename);
+                dbFile.setUrl("http://localhost:8080/cdn/" + randomFilename);
                 dbFile.setOriginal_name(originalFilename);
                 dbFile.setDate_added(date);
                 dbFile.setSolution(dbSolution);
