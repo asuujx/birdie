@@ -44,6 +44,11 @@ public class CourseMemberService {
         this.groupRepository = groupRepository;
     }
 
+    public CourseMember getCourseMemberByCourseIdAndUserId(int userId, int courseId) {
+        return courseMemberRepository.findByCourseIdAndUserId(courseId, userId)
+                .orElseThrow(() -> new EntityDoesNotExistException(COURSE_NOT_FOUND));
+    }
+
     public void addUserToCourse(String token, int courseId) {
         String jwt = token.replace("Bearer ", "");
         UserDetails userDetails;

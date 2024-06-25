@@ -3,15 +3,14 @@ package com.birdie.backend.controllers;
 import com.birdie.backend.dto.request.AddGroupRequest;
 import com.birdie.backend.dto.response.CourseMemberDetailsResponse;
 import com.birdie.backend.exceptions.UnauthorizedException;
-import com.birdie.backend.models.Course;
-import com.birdie.backend.models.Group;
-import com.birdie.backend.models.Task;
+import com.birdie.backend.models.*;
 import com.birdie.backend.services.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,16 +26,21 @@ public class CourseController {
     private final CourseMemberService courseMemberService;
     private final TaskService taskService;
     private final GroupService groupService;
+    private final JwtService jwtService;
+    private final UserService userService;
 
     @Autowired
     public CourseController(CourseService courseService,
                             CourseMemberService courseMemberService,
                             TaskService taskService,
-                            GroupService groupService) {
+                            GroupService groupService,
+                            JwtService jwtService, UserService userService) {
         this.courseService = courseService;
         this.courseMemberService = courseMemberService;
         this.taskService = taskService;
         this.groupService = groupService;
+        this.jwtService = jwtService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -45,7 +49,23 @@ public class CourseController {
     }
 
     @GetMapping("/{courseId}")
-    public Course getCourse(@PathVariable int courseId) {
+    public Course getCourse(@RequestHeader("Authorization") String token, @PathVariable int courseId) {
+        String jwt = token.replace("Bearer ", "");
+        UserDetails userDetails;
+
+        try {
+            userDetails = jwtService.loadUserDetailsFromToken(jwt);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(TOKEN_INVALID);
+        }
+
+        User user = userService.getUserByEmail(userDetails.getUsername());
+        CourseMember courseMember = courseMemberService.getCourseMemberByCourseIdAndUserId(courseId, user.getId());
+
+        if (courseMember == null) {
+            throw new UnauthorizedException(UNAUTHORIZED);
+        }
+
         return courseService.getCourse(courseId);
     }
 
