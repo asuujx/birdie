@@ -9,6 +9,7 @@ public class CourseMemberDetailsResponse {
     private int id;
     private String name;
     private String surname;
+    private String status;
     private Integer groupId;
     private String groupName;
 }

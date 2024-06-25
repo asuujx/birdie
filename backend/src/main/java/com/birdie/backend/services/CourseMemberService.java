@@ -47,7 +47,7 @@ public class CourseMemberService {
     public void addUserToCourse(String token, int courseId) {
         String jwt = token.replace("Bearer ", "");
         UserDetails userDetails;
-        Course course = courseService.getCourse(token, courseId);
+        Course course = courseService.getCourseForJoin(courseId);
 
         try {
             userDetails = jwtService.loadUserDetailsFromToken(jwt);
@@ -119,6 +119,7 @@ public class CourseMemberService {
         response.setId(courseMember.getId());
         response.setName(courseMember.getUser().getName());
         response.setSurname(courseMember.getUser().getSurname());
+        response.setStatus(String.valueOf(courseMember.getStatus()));
         response.setGroupId(courseMember.getGroup() != null ? courseMember.getGroup().getId() : null);
         response.setGroupName(courseMember.getGroup() != null ? courseMember.getGroup().getName() : null);
 

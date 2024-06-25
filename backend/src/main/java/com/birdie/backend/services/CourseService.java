@@ -66,6 +66,11 @@ public class CourseService {
         }
     }
 
+    public Course getCourseForJoin(int courseId) {
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> new EntityDoesNotExistException(COURSE_NOT_FOUND));
+    }
+
     public void createCourse(String token, Course course) {
         String jwt = token.replace("Bearer ", "");
         Course createdCourse = courseRepository.save(course);

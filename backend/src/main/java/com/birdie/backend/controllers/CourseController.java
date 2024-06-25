@@ -83,7 +83,6 @@ public class CourseController {
     }
 
     @PostMapping("/{courseId}/join")
-    @PreAuthorize("hasRole('STUDENT') || hasRole('TEACHER')")
     public ResponseEntity<String> joinCourse(@RequestHeader("Authorization") String token,
                                              @PathVariable int courseId) {
         try {
